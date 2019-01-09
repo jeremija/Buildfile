@@ -8,7 +8,9 @@
     "typescript": "^3.2.2",
     "typescript-tslint-plugin": "^0.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
   "scripts": {
     "test": "jest"
   },
