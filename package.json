@@ -1,0 +1,31 @@
+{
+  "name": "build-assistant",
+  "version": "1.0.0",
+  "description": "Run node.js build scripts quickly",
+  "main": "src/index.js",
+  "dependencies": {
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
+    "typescript-tslint-plugin": "^0.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeremija/build-assistant.git"
+  },
+  "keywords": [
+    "node",
+    "build",
+    "assistant",
+    "makefile"
+  ],
+  "author": "Jerko Steiner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeremija/build-assistant/issues"
+  },
+  "homepage": "https://github.com/jeremija/build-assistant#readme"
+}
