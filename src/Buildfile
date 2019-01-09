@@ -1,0 +1,16 @@
+
+  
+env:
+
+  a=3
+  b=4
+
+  c=5
+
+
+test:
+  command1 command2
+
+  command2 && command3
+
+
