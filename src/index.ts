@@ -234,7 +234,7 @@ export async function main(args: string[]) {
 
   const parallel = args[0] === '-p'
   if (parallel) {
-    args.slice(1)
+    args = args.slice(1)
   }
 
   if (!args.length && parser.firstTarget) {
