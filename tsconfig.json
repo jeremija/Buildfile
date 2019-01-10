@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es2015"],
-    "target": "es2015",
+    "target": "es3",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "strict": true,
