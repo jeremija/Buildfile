@@ -1,3 +1,4 @@
+import assert from 'assert'
 import {IProgram} from './IProgram'
 import {Target} from './Target'
 
@@ -11,9 +12,10 @@ export class Program implements IProgram {
       // the first target mentioned is the main target
       this.mainTarget = target.name
     }
-    if (this.targets.hasOwnProperty(target.name)) {
-      throw new Error('Target names must be unique: ' + target.name)
-    }
+    assert(
+      !this.targets.hasOwnProperty(target.name),
+      'Target names must be unique: ' + target.name,
+    )
     this.targetNames.push(target.name)
     this.targets[target.name] = target
   }
