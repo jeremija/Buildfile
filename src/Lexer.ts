@@ -68,6 +68,9 @@ export class Lexer {
             this.indent += 1
             return
           }
+          if (this.indent === 0) {
+            this.fail('Target names cannot contain spaces')
+          }
           this.value += c
           return
         }
