@@ -7,8 +7,8 @@ export class Compiler {
   constructor() {}
 
   async compile(it: ICharacterIterator): Promise<IProgram> {
-    const lexer = new Lexer()
-    await lexer.read(it)
+    const lexer = new Lexer(it)
+    await lexer.read()
 
     const parser = new Parser()
     return parser.parse(lexer.entries)

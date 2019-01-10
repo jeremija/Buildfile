@@ -12,12 +12,11 @@ export class Lexer {
 
   public readonly entries: Entry[] = []
 
-  constructor() {
-  }
+  constructor(protected readonly it: ICharacterIterator) {}
 
-  async read(it: ICharacterIterator) {
+  async read() {
     let c: string | null
-    while ((c = await it.next()) !== null) {
+    while ((c = await this.it.next()) !== null) {
       this.processToken(c)
     }
   }

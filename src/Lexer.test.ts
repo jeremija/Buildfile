@@ -5,11 +5,6 @@ import {StringIterator} from './StringIterator'
 describe('Lexer', () => {
 
 
-  let lexer!: Lexer
-  beforeEach(() => {
-    lexer = new Lexer()
-  })
-
   describe('read', () => {
     it('constructs entries', async () => {
       const source = `
@@ -30,7 +25,8 @@ test:
 
 
 `
-      await lexer.read(new StringIterator(source))
+      const lexer = new Lexer(new StringIterator(source))
+      await lexer.read()
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},
