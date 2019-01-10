@@ -1,7 +1,12 @@
 import assert from 'assert'
 import * as fs from 'fs'
 import * as path from 'path'
+import * as os from 'os'
 import {spawn} from 'child_process'
+
+export function getPathSeparator(platform: string) {
+  return platform === 'win32' ? ';' : ':'
+}
 
 export class Target {
   public readonly commands: Command[] = []
@@ -117,6 +122,7 @@ ${this.value}`)
 
 export class Parser {
   public readonly targets: {[key: string]: Target} = {}
+  public firstTarget = ''
 
   parse(entries: Entry[]) {
     let target: Target|undefined = undefined
@@ -138,6 +144,9 @@ export class Parser {
   }
 
   registerTarget(target: Target) {
+    if (!this.firstTarget) {
+      this.firstTarget = target.name
+    }
     if (this.targets.hasOwnProperty(target.name)) {
       throw new Error('Target names must be unique: ' + target.name)
     }
@@ -173,15 +182,9 @@ export class Subprocess {
     return new Promise((resolve, reject) => {
       console.log('==>', this.command)
       const subprocess = spawn(this.command, [], {
-        shell: true
+        shell: true,
+        stdio: "inherit",
       })
-
-      if (this.log) {
-        subprocess.stdout.on('data', data =>
-          process.stdout.write(data.toString()))
-        subprocess.stderr.on('data', data =>
-          process.stderr.write(data.toString()))
-      }
 
       subprocess.on('close', code => {
         if (code === 0) {
@@ -233,13 +236,21 @@ export async function main(args: string[]) {
     args.slice(1)
   }
 
+  if (!args.length && parser.firstTarget) {
+    args = [parser.firstTarget]
+  }
+
   const specificTargets = args.map(target => {
     assert(targets.hasOwnProperty(target), 'Unknown target: ' + target)
     return targets[target].commands
     .map(command => new Subprocess(command.value))
   })
-  // const subprocesses = args.map(arg => new Subprocess(arg))
 
+  const nodeModulesDir = findNodeModules(process.cwd())
+  if (nodeModulesDir) {
+    const separator = getPathSeparator(os.platform())
+    process.env.PATH = `${nodeModulesDir}${separator}${process.env.PATH}`
+  }
   if (parallel) {
     await runInParallel(specificTargets)
   } else {

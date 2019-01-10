@@ -16,7 +16,10 @@
     "ts-node": "^7.0.1"
   },
   "scripts": {
-    "test": "jest"
+    "build": "tsc",
+    "clean": "find src/ -name '*.js' | xargs rm",
+    "test": "jest",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
