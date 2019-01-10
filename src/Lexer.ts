@@ -22,8 +22,10 @@ export class Lexer {
     while ((c = await this.it.next()) !== null) {
       this.processToken(c)
     }
-    // in case the file does not end with a new line
-    this.processToken('\n')
+    if (this.lastChar !== '\r' && this.lastChar !== '\n') {
+      // in case the file does not end with a new line
+      this.processToken('\n')
+    }
   }
 
   protected fail(message: string) {
@@ -60,9 +62,6 @@ export class Lexer {
       case ':':
         if (!this.value.length) {
           this.fail('Cannot define a target without a name')
-        }
-        if (this.indent !== 0) {
-          this.fail('Targets cannot be indented')
         }
         this.entries.push(new Entry(EntryType.TARGET, this.value))
         this.entryType = EntryType.DEPENDENCY
@@ -150,9 +149,19 @@ export class Lexer {
           // count the lines properly for windows CRLF encoding
           this.newLine()
         }
+        this.position = 0
+        break
     }
 
     this.lastChar = c
+  }
+
+  public getPosition() {
+    return this.position
+  }
+
+  public getLine() {
+    return this.line
   }
 
 }

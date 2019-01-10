@@ -4,6 +4,22 @@ import {StringIterator} from './StringIterator'
 
 describe('Lexer', () => {
 
+  async function read(str: string) {
+    const lexer = new Lexer(new StringIterator(str))
+    await lexer.read()
+    return lexer
+  }
+
+  async function getError(p: Promise<Lexer>): Promise<Error> {
+    let error!: Error
+    try {
+      await p
+    } catch (err) {
+      error = err
+    }
+    expect(error).toBeTruthy()
+    return error
+  }
 
   describe('read', () => {
     it('constructs entries', async () => {
@@ -25,8 +41,7 @@ test:
 
 
 `
-      const lexer = new Lexer(new StringIterator(source))
-      await lexer.read()
+      const lexer = await read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},
@@ -38,15 +53,14 @@ test:
       ])
     })
 
-    it('reads dependencies', async () => {
+    it('reads dependency', async () => {
       const source = `t1: t2
   echo t1
 
 t2:
   echo t2`
 
-      const lexer = new Lexer(new StringIterator(source))
-      await lexer.read()
+      const lexer = await read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 't1'},
         {type: EntryType.DEPENDENCY, value: 't2'},
@@ -54,6 +68,59 @@ t2:
         {type: EntryType.TARGET, value: 't2'},
         {type: EntryType.COMMAND, value: 'echo t2'},
       ])
+    })
+
+    it('reads multiple dependencies', async () => {
+      const source = `t1: t2 t3
+t2:`
+
+      const lexer = await read(source)
+      expect(lexer.entries).toEqual([
+        {type: EntryType.TARGET, value: 't1'},
+        {type: EntryType.DEPENDENCY, value: 't2'},
+        {type: EntryType.DEPENDENCY, value: 't3'},
+        {type: EntryType.TARGET, value: 't2'},
+      ])
+    })
+
+    it('reads CRLF, LF and CR', async () => {
+      let lexer = await read('\n\n')
+      expect(lexer.getPosition()).toEqual(0)
+      expect(lexer.getLine()).toEqual(3)
+
+      lexer = await read('\r\n')
+      expect(lexer.getPosition()).toEqual(0)
+      expect(lexer.getLine()).toEqual(2)
+
+      lexer = await read('\r')
+      expect(lexer.getPosition()).toEqual(0)
+      expect(lexer.getLine()).toEqual(2)
+    })
+
+    it('fails when commands are wrongly indented', async () => {
+      const error = await getError(read(`command:
+ test`))
+      expect(error.message).toMatch(/2 spaces/)
+    })
+
+    it('fails when dependency names contain colons', async () => {
+      const error = await getError(read(`command: command2:`))
+      expect(error.message).toMatch(/cannot contain colons/)
+    })
+
+    it('fails when targets contain spaces', async () => {
+      const error = await getError(read(`com mand:`))
+      expect(error.message).toMatch(/cannot contain spaces/)
+    })
+
+    it('fails when colon is forgotten', async () => {
+      const error = await getError(read(`command\n`))
+      expect(error.message).toMatch(/forget a colon/)
+    })
+
+    it('fails when no target name', async () => {
+      const error = await getError(read(`:\n`))
+      expect(error.message).toMatch(/without a name/)
     })
   })
 })
