@@ -4,6 +4,5 @@ node_js:
   - "10"
 script:
   - jest --coverage
-  - tsc
 notifications:
   email: false
