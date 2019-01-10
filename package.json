@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Run node.js build scripts quickly",
   "main": "src/index.js",
+  "bin": {
+    "build": "src/index.js"
+  },
   "dependencies": {
     "tslint": "^5.12.0",
     "typescript": "^3.2.2",
