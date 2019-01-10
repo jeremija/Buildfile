@@ -1,5 +1,5 @@
 {
-  "name": "Buildfile",
+  "name": "buildfile",
   "version": "1.0.0",
   "description": "Run node.js build scripts quickly",
   "main": "src/index.js",
