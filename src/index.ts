@@ -6,7 +6,6 @@ import {ParallelRunner} from './ParallelRunner'
 import {SerialRunner} from './SerialRunner'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
 
-
 export async function main(args: string[]) {
   const isHelp = args[0] === '-h' || args[0] === '--help'
   if (isHelp) {

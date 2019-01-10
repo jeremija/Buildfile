@@ -15,4 +15,16 @@ describe('FileIterator', () => {
     expect(buffer).toEqual(readFileSync(filename, 'utf8'))
   })
 
+  it('rejects on error', async () => {
+    const i = new FileIterator('/non/existing/filename')
+    let error!: Error
+    try {
+      await i.next()
+    } catch (err) {
+      error = err
+    }
+    expect(error).toBeTruthy()
+    expect(error.message).toMatch(/^ENOENT/)
+  })
+
 })

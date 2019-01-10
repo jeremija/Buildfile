@@ -23,8 +23,8 @@ export class Lexer {
   }
 
   protected fail(message: string) {
-    throw new Error(`Lexer error: [${this.position}, ${this.line}]: ${message}
-${this.value}`)
+    throw new Error(
+      `[${this.line}, ${this.position}]: [${this.value}] ${message}`)
   }
 
   protected newLine() {
