@@ -23,7 +23,7 @@ export abstract class Runner {
     await this.execute(targets)
   }
 
-  async run(program: IProgram, targets: string[]) {
+  async run(program: IProgram, targets: string[] = []) {
     if (!targets.length) {
       targets = [program.mainTarget]
     }
