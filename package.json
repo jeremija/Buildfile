@@ -1,5 +1,5 @@
 {
-  "name": "build-assistant",
+  "name": "Buildfile",
   "version": "1.0.0",
   "description": "Run node.js build scripts quickly",
   "main": "src/index.js",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeremija/build-assistant.git"
+    "url": "git+https://github.com/jeremija/buildfile.git"
   },
   "keywords": [
     "node",
@@ -34,7 +34,7 @@
   "author": "Jerko Steiner",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jeremija/build-assistant/issues"
+    "url": "https://github.com/jeremija/buildfile/issues"
   },
-  "homepage": "https://github.com/jeremija/build-assistant#readme"
+  "homepage": "https://github.com/jeremija/buildfile#readme"
 }
