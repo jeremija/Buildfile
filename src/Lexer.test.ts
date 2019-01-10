@@ -1,22 +1,36 @@
-import {createReadStream} from 'fs'
 import {EntryType} from './EntryType'
 import {Lexer} from './Lexer'
-import {join} from 'path'
+import {StringIterator} from './StringIterator'
 
 describe('Lexer', () => {
+
 
   let lexer!: Lexer
   beforeEach(() => {
     lexer = new Lexer()
   })
 
-  function getStream() {
-    return createReadStream(join(__dirname, 'Buildfile'))
-  }
-
   describe('read', () => {
     it('constructs entries', async () => {
-      await lexer.read(getStream())
+      const source = `
+
+  
+env:
+
+  a=3
+  b=4
+
+  c=5
+
+
+test:
+  command1 command2
+
+  command2 && command3
+
+
+`
+      await lexer.read(new StringIterator(source))
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},

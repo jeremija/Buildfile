@@ -1,38 +1,41 @@
+import assert from 'assert'
 import {Command} from './Command'
 import {Target} from './Target'
 import {Subprocess} from './Subprocess'
+import {IProgram} from './IProgram'
 
-export class Runner {
-  constructor(public readonly parallel = false) {}
+export abstract class Runner {
+  constructor() {}
 
-  async runInParallel(targets: Target[]) {
-    await Promise.all(
-      targets.map(async target => {
-        for (let command of target.commands) {
-          await this.runCommand(command)
-        }
-      }),
-    )
-  }
+  protected abstract async execute(targets: Target[]): Promise<void>
 
-  async runInSeries(targets: Target[]) {
-    for (let target of targets) {
-      for (let command of target.commands) {
-        await this.runCommand(command)
-      }
+  protected async runTarget(target: Target) {
+    for (let command of target.commands) {
+      await this.runCommand(command)
     }
   }
 
-  async runCommand(command: Command) {
+  private async runCommand(command: Command) {
     return await new Subprocess(command.value).run()
   }
 
-  async runTargets(targets: Target[]) {
-    if (this.parallel) {
-      await this.runInParallel(targets)
-    } else {
-      await this.runInSeries(targets)
+  private async runTargets(targets: Target[]) {
+    await this.execute(targets)
+  }
+
+  async run(program: IProgram, targets: string[]) {
+    if (!targets.length) {
+      targets = [program.mainTarget]
     }
+
+    const selectedTargets = targets.map(t => {
+      assert.ok(
+        program.targets.hasOwnProperty(t),
+        `Unknown target: ${t}`,
+      )
+      return program.targets[t]
+    })
+    this.runTargets(selectedTargets)
   }
 
 }

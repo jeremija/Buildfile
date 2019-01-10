@@ -1,5 +1,6 @@
 import {Entry} from './Entry'
 import {EntryType} from './EntryType'
+import {ICharacterIterator} from './ICharacterIterator'
 
 export class Lexer {
 
@@ -14,21 +15,11 @@ export class Lexer {
   constructor() {
   }
 
-  async read(readable: NodeJS.ReadableStream) {
-    return new Promise((resolve, reject) => {
-      readable.setEncoding('utf8');
-      readable.on('error', reject)
-      readable.on('readable', () => {
-        let chunk: string
-        while ((chunk = readable.read(1) as string) !== null) {
-          this.processToken(chunk)
-        }
-      })
-
-      readable.on('end', () => {
-        resolve()
-      })
-    })
+  async read(it: ICharacterIterator) {
+    let c: string | null
+    while ((c = await it.next()) !== null) {
+      this.processToken(c)
+    }
   }
 
   protected fail(message: string) {
