@@ -1,4 +1,4 @@
-import * as os from 'os'
+import {platform} from 'os'
 import {dirname, join} from 'path'
 import {statSync} from 'fs'
 
@@ -12,7 +12,7 @@ export function addPathVariable(
   if (!pathToAdd) {
     return currentPath
   }
-  const separator = getPathSeparator(os.platform())
+  const separator = getPathSeparator(platform())
   return `${pathToAdd}${separator}${process.env.PATH}`
 }
 

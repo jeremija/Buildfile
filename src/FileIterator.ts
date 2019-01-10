@@ -3,7 +3,6 @@ import {ICharacterIterator} from './ICharacterIterator'
 import {createReadStream} from 'fs'
 
 export class FileIterator implements ICharacterIterator {
-  public ended = false
   public readonly isReadable: Promise<void>
 
   protected isReadableResolve!: () => void
@@ -30,10 +29,6 @@ export class FileIterator implements ICharacterIterator {
     readable.on('readable', () => {
       this.isReadableResolve()
     })
-    readable.on('end', () => {
-      this.ended = true
-    })
-
     await this.readable
   }
 

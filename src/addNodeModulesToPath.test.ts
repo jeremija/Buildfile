@@ -18,6 +18,9 @@ describe('findNodeModulesBin', () => {
 
     value = findNodeModulesBin(join('/non-existing/dir/bla/123/test'))
     expect(value).toEqual(undefined)
+
+    value = findNodeModulesBin(join(__dirname, '../test-files/bla'))
+    expect(value).toEqual(join(process.cwd(), 'node_modules', '.bin'))
   })
 
 })

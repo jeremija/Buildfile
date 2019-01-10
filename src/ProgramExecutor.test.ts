@@ -1,6 +1,7 @@
-import {ProgramExecutor} from './ProgramExecutor'
 import {Compiler} from './Compiler'
+import {ProgramExecutor} from './ProgramExecutor'
 import {StringIterator} from './StringIterator'
+import {getError} from './TestUtils'
 
 describe('ProgramExecutor', () => {
 
@@ -21,6 +22,12 @@ d:
 
   it('executes dependencies and programs', async () => {
     await run(source, [])
+  })
+
+  it('fails when target does not exist', async () => {
+    const source = `a: b`
+    const error = await getError(run(source, []))
+    expect(error.message).toMatch(/unknown target: b/i)
   })
 
 })

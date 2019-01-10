@@ -32,7 +32,7 @@ export class ProgramExecutor {
       return program.targets[t]
     })
 
-    this.executeDependencies(program, selectedTargets)
+    await this.executeDependencies(program, selectedTargets)
 
     const runner = parallel ? new ParallelRunner() : new SerialRunner()
     await runner.run(selectedTargets)
