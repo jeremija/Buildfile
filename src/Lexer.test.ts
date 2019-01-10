@@ -37,5 +37,23 @@ test:
         {type: EntryType.COMMAND, value: 'command2 && command3'},
       ])
     })
+
+    it('reads dependencies', async () => {
+      const source = `t1: t2
+  echo t1
+
+t2:
+  echo t2`
+
+      const lexer = new Lexer(new StringIterator(source))
+      await lexer.read()
+      expect(lexer.entries).toEqual([
+        {type: EntryType.TARGET, value: 't1'},
+        {type: EntryType.DEPENDENCY, value: 't2'},
+        {type: EntryType.COMMAND, value: 'echo t1'},
+        {type: EntryType.TARGET, value: 't2'},
+        {type: EntryType.COMMAND, value: 'echo t2'},
+      ])
+    })
   })
 })
