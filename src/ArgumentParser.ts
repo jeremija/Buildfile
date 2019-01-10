@@ -17,9 +17,12 @@ interface IArgumentMap {
   [key: string]: IArgument
 }
 
-export interface IContext {
+export interface IResult {
   flags: IFlags
   positional: string[]
+}
+
+export interface IContext extends IResult{
   requiredArgs: IArgumentMap,
   defaultArgs: IArgumentMap,
   onlyPositionals: boolean,
@@ -157,7 +160,7 @@ export class ArgumentParser {
     return help
   }
 
-  parse(args: string[]): IContext {
+  parse(args: string[]): IResult {
     const ctx = this.createContext()
 
     for (let value of args) {

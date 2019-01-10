@@ -8,6 +8,8 @@ export class Subprocess {
     public readonly command: string,
     public readonly log: boolean = true,
   ) {
+    // TODO add a third option. inherit is useful to preserve color, and
+    // attaching to streams and logging that loses color
     this.stdio = log ? 'inherit' : 'ignore'
   }
 
