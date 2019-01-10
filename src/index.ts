@@ -3,214 +3,9 @@ import assert from 'assert'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
-import {spawn} from 'child_process'
 
 export function getPathSeparator(platform: string) {
   return platform === 'win32' ? ';' : ':'
-}
-
-export class Target {
-  public readonly commands: Command[] = []
-
-  constructor(readonly name: string) {}
-
-  addCommand(command: Command) {
-    this.commands.push(command)
-  }
-}
-
-export class Command {
-  constructor(readonly value: string) {}
-}
-
-export enum Type {
-  TARGET,
-  COMMAND,
-}
-
-class Entry {
-  constructor(
-    readonly type: Type,
-    readonly value: string,
-  ) {}
-}
-
-export class Lexer {
-
-  protected position = 0
-  protected line = 1
-
-  protected indent = 0
-  protected value = ''
-
-  public readonly entries: Entry[] = []
-
-  constructor() {
-  }
-
-  async read(readable: NodeJS.ReadableStream) {
-    return new Promise((resolve, reject) => {
-      readable.setEncoding('utf8');
-      readable.on('error', reject)
-      readable.on('readable', () => {
-        let chunk: string
-        while ((chunk = readable.read(1) as string) !== null) {
-          this.processToken(chunk)
-        }
-      })
-
-      readable.on('end', () => {
-        resolve()
-      })
-    })
-  }
-
-  protected fail(message: string) {
-    throw new Error(`Lexer error: [${this.position}, ${this.line}]: ${message}
-${this.value}`)
-  }
-
-  protected newLine() {
-    this.line += 1
-    this.position = 0
-    this.value = ''
-    this.indent = 0
-  }
-
-  protected processToken(c: string) {
-    this.position += 1
-    const value = this.value
-    switch(c) {
-      case '\r':
-      case '\n':
-        if (value === '') {
-          this.newLine()
-          return
-        }
-        if (this.indent === 0) {
-          if (value.length > 1 && value.substring(value.length - 1) !== ':') {
-            this.fail('Targets must end with a colon!')
-            return
-          }
-          this.entries.push(
-            new Entry(Type.TARGET, value.substring(0, value.length - 1)),
-          )
-          this.newLine()
-          return
-        }
-        if (this.indent !== 2) {
-          this.fail('Subcommands must be indented with 2 spaces!')
-        }
-        this.entries.push(new Entry(Type.COMMAND, value))
-        this.newLine()
-        return
-
-      default:
-        if (c === ' ') {
-          if (value.length === 0) {
-            this.indent += 1
-            return
-          }
-          this.value += c
-          return
-        }
-        this.value += c
-        return
-    }
-  }
-
-}
-
-export class Parser {
-  public readonly targets: {[key: string]: Target} = {}
-  public firstTarget = ''
-
-  parse(entries: Entry[]) {
-    let target: Target|undefined = undefined
-    entries.forEach(entry => {
-      switch(entry.type) {
-        case (Type.TARGET):
-          target = new Target(entry.value)
-          this.registerTarget(target)
-          break
-        case (Type.COMMAND):
-          let command = new Command(entry.value)
-          if (!target) {
-            throw new Error('A command must have a parent target:' + command)
-          }
-          target.addCommand(command)
-          break
-      }
-    })
-  }
-
-  registerTarget(target: Target) {
-    if (!this.firstTarget) {
-      this.firstTarget = target.name
-    }
-    if (this.targets.hasOwnProperty(target.name)) {
-      throw new Error('Target names must be unique: ' + target.name)
-    }
-    this.targets[target.name] = target
-  }
-}
-
-export function findNodeModules(dir = process.cwd()): string | undefined {
-  try {
-    const candidate = path.join(dir, 'node_modules', '.bin')
-    const result = fs.statSync(candidate)
-    if (result.isDirectory()) {
-      return candidate
-    }
-  } catch (err) {
-    // pass
-  }
-
-  const dir2 = path.dirname(dir)
-  if (dir2 === dir) {
-    return
-  }
-  findNodeModules(dir2)
-}
-
-export class Subprocess {
-  constructor(
-    public readonly command: string,
-    public readonly log: boolean = true,
-  ) {}
-
-  async run () {
-    return new Promise((resolve, reject) => {
-      console.log('==>', this.command)
-      const subprocess = spawn(this.command, [], {
-        shell: true,
-        stdio: "inherit",
-      })
-
-      subprocess.on('close', code => {
-        if (code === 0) {
-          resolve()
-        } else {
-          reject(new Error(`${this.command} exited with code ${code}`))
-        }
-      })
-      subprocess.on('error', reject)
-    })
-  }
-}
-
-export async function runInParallel(subprocesses: Subprocess[][]) {
-  await Promise.all(
-    subprocesses.map(spList =>
-      Promise.all(spList.map(sp => sp.run()))))
-}
-
-export async function runInSeries(subprocesses: Subprocess[][]) {
-  for (let spList of subprocesses) {
-    for (let sp of spList) {
-      await sp.run()
-    }
-  }
 }
 
 export async function main(args: string[]) {
@@ -241,10 +36,9 @@ export async function main(args: string[]) {
     args = [parser.firstTarget]
   }
 
-  const specificTargets = args.map(target => {
+  const targetsToRun = args.map(target => {
     assert(targets.hasOwnProperty(target), 'Unknown target: ' + target)
-    return targets[target].commands
-    .map(command => new Subprocess(command.value))
+    return targets[target]
   })
 
   const nodeModulesDir = findNodeModules(process.cwd())
@@ -252,11 +46,8 @@ export async function main(args: string[]) {
     const separator = getPathSeparator(os.platform())
     process.env.PATH = `${nodeModulesDir}${separator}${process.env.PATH}`
   }
-  if (parallel) {
-    await runInParallel(specificTargets)
-  } else {
-    await runInSeries(specificTargets)
-  }
+
+  await runTargets(targetsToRun)
 }
 
 if (require.main === module) {
