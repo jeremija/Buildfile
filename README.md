@@ -1,6 +1,6 @@
 # buildfile
 
-[![Build Status](https://travis-ci.com/jeremija/buildfile.svg?branch=master)](https://travis-ci.com/jeremija/buildfile) [![npm](https://img.shields.io/npm/v/buildfile.svg)](https://www.npmjs.com/package/buildfile)
+[![Build Status](https://travis-ci.com/jeremija/Buildfile.svg?branch=master)](https://travis-ci.com/jeremija/Buildfile) [![npm](https://img.shields.io/npm/v/buildfile.svg)](https://www.npmjs.com/package/buildfile)
 
 This is a task runner utility similar to Makefile, but it does not check the
 files of the timestamps. It uses the same concept of targets, dependencies,
