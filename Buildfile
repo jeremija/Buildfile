@@ -1,0 +1,3 @@
+test:
+  ls
+  ls -l

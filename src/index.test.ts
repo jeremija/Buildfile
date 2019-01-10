@@ -17,13 +17,13 @@ describe('Lexer', () => {
     it('constructs entries', async () => {
       await lexer.read(getStream())
       expect(lexer.entries).toEqual([
-        {element: Type.TARGET, value: 'env'},
-        {element: Type.COMMAND, value: 'a=3'},
-        {element: Type.COMMAND, value: 'b=4'},
-        {element: Type.COMMAND, value: 'c=5'},
-        {element: Type.TARGET, value: 'test'},
-        {element: Type.COMMAND, value: 'command1 command2'},
-        {element: Type.COMMAND, value: 'command2 && command3'},
+        {type: Type.TARGET, value: 'env'},
+        {type: Type.COMMAND, value: 'a=3'},
+        {type: Type.COMMAND, value: 'b=4'},
+        {type: Type.COMMAND, value: 'c=5'},
+        {type: Type.TARGET, value: 'test'},
+        {type: Type.COMMAND, value: 'command1 command2'},
+        {type: Type.COMMAND, value: 'command2 && command3'},
       ])
     })
   })
