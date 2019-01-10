@@ -119,6 +119,7 @@ export class Lexer {
         this.entries.push(new Entry(EntryType.COMMAND, this.value))
         this.value = ''
         this.indent = 0
+        this.entryType = EntryType.TARGET
         return
       default:
         this.addToValue(c)

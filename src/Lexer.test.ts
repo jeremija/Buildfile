@@ -1,6 +1,7 @@
 import {EntryType} from './EntryType'
 import {Lexer} from './Lexer'
 import {StringIterator} from './StringIterator'
+import {getError} from './TestUtils'
 
 describe('Lexer', () => {
 
@@ -8,17 +9,6 @@ describe('Lexer', () => {
     const lexer = new Lexer(new StringIterator(str))
     await lexer.read()
     return lexer
-  }
-
-  async function getError(p: Promise<Lexer>): Promise<Error> {
-    let error!: Error
-    try {
-      await p
-    } catch (err) {
-      error = err
-    }
-    expect(error).toBeTruthy()
-    return error
   }
 
   describe('read', () => {
@@ -80,6 +70,30 @@ t2:`
         {type: EntryType.DEPENDENCY, value: 't2'},
         {type: EntryType.DEPENDENCY, value: 't3'},
         {type: EntryType.TARGET, value: 't2'},
+      ])
+    })
+
+    it('reads multiple commands w/ dependencies', async () => {
+      const source = `a: -p b c
+b: d
+  echo b
+c:
+  echo c
+d:
+  echo d`
+      const lexer = await read(source)
+      expect(lexer.entries).toEqual([
+        {type: EntryType.TARGET, value: 'a'},
+        {type: EntryType.DEPENDENCY, value: '-p'},
+        {type: EntryType.DEPENDENCY, value: 'b'},
+        {type: EntryType.DEPENDENCY, value: 'c'},
+        {type: EntryType.TARGET, value: 'b'},
+        {type: EntryType.DEPENDENCY, value: 'd'},
+        {type: EntryType.COMMAND, value: 'echo b'},
+        {type: EntryType.TARGET, value: 'c'},
+        {type: EntryType.COMMAND, value: 'echo c'},
+        {type: EntryType.TARGET, value: 'd'},
+        {type: EntryType.COMMAND, value: 'echo d'},
       ])
     })
 

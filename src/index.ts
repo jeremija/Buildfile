@@ -2,8 +2,7 @@
 import * as path from 'path'
 import {FileIterator} from './FileIterator'
 import {Compiler} from './Compiler'
-import {ParallelRunner} from './ParallelRunner'
-import {SerialRunner} from './SerialRunner'
+import {ProgramExecutor} from './ProgramExecutor'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
 
 export async function main(args: string[]) {
@@ -23,12 +22,8 @@ export async function main(args: string[]) {
 
   addNodeModulesToPath()
 
-  const parallel = args[0] === '-p'
-  if (parallel) {
-    args = args.slice(1)
-  }
-  const runner = parallel ? new ParallelRunner() : new SerialRunner()
-  await runner.run(program, args)
+  const executor = new ProgramExecutor()
+  await executor.execute(program, args)
 }
 
 if (require.main === module) {

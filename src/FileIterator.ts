@@ -24,19 +24,17 @@ export class FileIterator implements ICharacterIterator {
     const readable = this.readable = createReadStream(this.filename)
     readable.setEncoding('utf8')
 
-    return new Promise((resolve, reject) => {
-      readable.on('error', err => {
-        this.isReadableReject(err)
-        reject(err)
-      })
-      readable.on('readable', () => {
-        this.isReadableResolve()
-        resolve()
-      })
-      readable.on('end', () => {
-        this.ended = true
-      })
+    readable.on('error', err => {
+      this.isReadableReject(err)
     })
+    readable.on('readable', () => {
+      this.isReadableResolve()
+    })
+    readable.on('end', () => {
+      this.ended = true
+    })
+
+    await this.readable
   }
 
   async next(): Promise<string | null> {

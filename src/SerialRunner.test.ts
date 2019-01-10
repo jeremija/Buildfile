@@ -1,7 +1,7 @@
 import {Compiler} from './Compiler'
 import {SerialRunner} from './SerialRunner'
 import {StringIterator} from './StringIterator'
-import {IProgram} from './IProgram'
+import {Target} from './Target'
 
 describe('SerialRunner', () => {
 
@@ -10,17 +10,14 @@ describe('SerialRunner', () => {
 b:
   echo b`
 
-  let program!: IProgram
+  let targets!: Target[]
   beforeEach(async () => {
-    program = await new Compiler().compile(new StringIterator(source))
+    const program = await new Compiler().compile(new StringIterator(source))
+    targets = Object.keys(program.targets).map(k => program.targets[k])
   })
 
-  it('runs default target', async () => {
-    await new SerialRunner().run(program)
-  })
-
-  it('runs everything in series', async () => {
-    await new SerialRunner().run(program, ['a', 'b'])
+  it('runs everything serially', async () => {
+    await new SerialRunner().run(targets)
   })
 
 })

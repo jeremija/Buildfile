@@ -18,8 +18,14 @@ export class Parser {
           target = new Target(entry.value)
           this.program.addTarget(target)
           break
+        case (EntryType.DEPENDENCY):
+          const dependency = entry.value
+          assert.ok(
+            target, 'A dependency must have a parent target: ' + dependency)
+          target!.addDependency(dependency)
+          break
         case (EntryType.COMMAND):
-          let command = new Command(entry.value)
+          const command = new Command(entry.value)
           assert.ok(target, 'A command must have a parent target: ' + command)
           target!.addCommand(command)
           break

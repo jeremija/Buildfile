@@ -1,7 +1,7 @@
 import {Compiler} from './Compiler'
 import {ParallelRunner} from './ParallelRunner'
 import {StringIterator} from './StringIterator'
-import {IProgram} from './IProgram'
+import {Target} from './Target'
 
 describe('ParallelRunner', () => {
 
@@ -10,17 +10,14 @@ describe('ParallelRunner', () => {
 b:
   echo b`
 
-  let program!: IProgram
+  let targets!: Target[]
   beforeEach(async () => {
-    program = await new Compiler().compile(new StringIterator(source))
-  })
-
-  it('runs default target', async () => {
-    await new ParallelRunner().run(program)
+    const program = await new Compiler().compile(new StringIterator(source))
+    targets = Object.keys(program.targets).map(k => program.targets[k])
   })
 
   it('runs everything in parallel', async () => {
-    await new ParallelRunner().run(program, ['a', 'b'])
+    await new ParallelRunner().run(targets)
   })
 
 })
