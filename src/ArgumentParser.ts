@@ -1,124 +1,220 @@
-import assert from 'assert'
+type Value = boolean | string
 
-interface Argument {
+export interface IArgument {
   readonly name: string
   readonly alias: string
   readonly description: string
   readonly required?: boolean
-  readonly type: 'flag' | 'string'
-  readonly default?: boolean | string
+  readonly type?: 'flag' | 'string'
+  readonly default?: Value
 }
 
 export interface IFlags {
-  [name: string]: string | boolean
+  [name: string]: Value
 }
 
-export interface IArgumentParserResult {
+interface IArgumentMap {
+  [key: string]: IArgument
+}
+
+export interface IContext {
   flags: IFlags
   positional: string[]
+  requiredArgs: IArgumentMap,
+  defaultArgs: IArgumentMap,
+  onlyPositionals: boolean,
+  pending: IArgument | undefined,
 }
 
 export class ArgumentParser {
 
-  public readonly args: {[key: string]: Argument} = {}
-  public readonly requiredArgs: Set<string> = new Set()
-  public readonly defaultArgs: Set<string> = new Set()
+  public readonly args: IArgumentMap = {}
 
-  constructor(args: Argument[]) {
-    for (let arg of args) {
+  constructor(protected readonly options: IArgument[]) {
+    for (let arg of options) {
       const argument = {...arg}
+      if (!argument.type) {
+        argument.type = 'flag'
+      }
+      if (argument.default !== undefined) {
+        switch(argument.type) {
+          case 'string':
+            argument.default = ''
+            break
+          case 'flag':
+            argument.default = false
+            break
+        }
+      }
       this.args[argument.name] = this.args[argument.alias] = argument
-
-      if (arg.default) {
-        this.defaultArgs.add(arg.name)
-      }
-      else if (arg.required) {
-        this.requiredArgs.add(arg.name)
-      }
     }
   }
 
-  markArgument(flags: IFlags, arg: Argument, value: string | boolean) {
+  protected add(ctx: IContext, arg: IArgument, value: Value) {
     if (arg.required) {
-      this.requiredArgs.delete(arg.name)
+      delete ctx.requiredArgs[arg.name]
     }
-    if (arg.default) {
-      this.defaultArgs.delete(arg.name)
+    if (arg.default !== undefined) {
+      delete ctx.defaultArgs[arg.name]
     }
-    flags[arg.name] = flags[arg.alias] = value
+    ctx.flags[arg.name] = ctx.flags[arg.alias] = value
   }
 
-  parse(args: string[]): IArgumentParserResult {
-    const flags: IFlags = {}
+  /**
+   * Parses arguments with a single dash and two or more letters
+   */
+  protected addFlags(ctx: IContext, value: string) {
+    const chars = value.split('')
+    chars.forEach((flag, index) => {
+      let arg = this.args[flag]
+      if (arg.type === 'string') {
+        if (index < chars.length - 1) {
+          throw new Error(
+            `The argument "-${flag}" is at invalid location in "-${value}" because it requires a value`)
+        }
+        this.addValue(ctx, flag)
+        return
+      }
+      this.add(ctx, arg, true)
+    })
+  }
 
-    const positional = []
-    let lastArg: Argument | undefined
-    let onlyPositionals = false
+  protected createContext(): IContext{
+    const requiredArgs: IArgumentMap = {}
+    const defaultArgs: IArgumentMap = {}
+    for (let arg of this.options) {
+      if (arg.default !== undefined) {
+        defaultArgs[arg.name] = arg
+      } else if (arg.required) {
+        requiredArgs[arg.name] = arg
+      }
+    }
+
+    return {
+      flags: {},
+      positional: [],
+      requiredArgs,
+      defaultArgs,
+      onlyPositionals: false,
+      pending: undefined,
+    }
+  }
+
+  protected addValue(ctx: IContext, value: string) {
+    const hasEquals = value.indexOf('=') >= 0
+    let rightOfEquals = ''
+
+    if (hasEquals) {
+      [value, rightOfEquals] = value.split(/=(.+)/)
+    }
+
+    if (!this.args.hasOwnProperty(value)) {
+      return false
+    }
+
+    const arg = this.args[value]
+    switch (arg.type) {
+      case 'flag':
+        this.add(ctx, arg, true)
+        break
+      case 'string':
+        if (hasEquals) {
+          this.add(ctx, arg, rightOfEquals)
+        } else {
+          ctx.pending = arg
+        }
+        break
+    }
+
+    return true
+  }
+
+  help(): string {
+    function getHelp(arg: IArgument) {
+      let text = `  -${arg.name}, --${arg.alias}`
+      if (arg.type === 'string') {
+        text += ` ${arg.alias.toUpperCase() }`
+      }
+      for (let i = text.length; i < 24; i++) {
+        text += ' '
+      }
+      text += arg.description
+      if (arg.default !== undefined) {
+        text += ` (default: ${arg.default})`
+      }
+      return text + '\n'
+    }
+
+    let help = '\nRequired arguments:\n'
+    this.options.filter(arg => arg.required).forEach(arg => {
+      help += getHelp(arg)
+    })
+    help += '\nOptional arguments:\n'
+    this.options.filter(arg => !arg.required).forEach(arg => {
+      help += getHelp(arg)
+    })
+
+    return help
+  }
+
+  parse(args: string[]): IContext {
+    const ctx = this.createContext()
 
     for (let value of args) {
-      if (onlyPositionals) {
-        positional.push(value)
+      if (ctx.onlyPositionals) {
+        ctx.positional.push(value)
         continue
       }
 
-      if (lastArg) {
-        flags[lastArg.name] = flags[lastArg.alias] = value
-        this.markArgument(flags, lastArg, value)
-        lastArg = undefined
+      if (ctx.pending) {
+        this.add(ctx, ctx.pending, value)
+        ctx.pending = undefined
         continue
       }
 
       if (value === '--') {
-        onlyPositionals = true
+        ctx.onlyPositionals = true
         continue
       }
 
       if (value.startsWith('--')) {
         value = value.substring(2)
       } else if (value.startsWith('-')) {
-        if (value.length > 2) {
-          value = value.substring(1)
-          for (let flag of value.split('')) {
-            let arg = this.args[flag]
-            assert(
-              !arg || arg.type !== 'flag', `The argument "${flag}" is invalid`)
-            this.markArgument(flags, arg, true)
-          }
+        value = value.substring(1)
+        if (value.length > 1) {
+          this.addFlags(ctx, value)
           continue
         }
-        value = value.substring(1)
       }
 
-      if (this.args.hasOwnProperty(value)) {
-        let arg = this.args[value]
-        switch (arg.type) {
-          case 'flag':
-            this.markArgument(flags, arg, true)
-            break
-          case 'string':
-            lastArg = arg
-            break
-        }
+      if (this.addValue(ctx, value)) {
         continue
       }
-      positional.push(value)
+
+      ctx.positional.push(value)
     }
 
-    if (lastArg) {
-      throw new Error(`The flag ${lastArg.name} requires a value!`)
+    if (ctx.pending) {
+      throw new Error(
+        `Flag -${ctx.pending.name}/--${ctx.pending.alias} requires a value!`)
     }
 
-    this.defaultArgs.forEach(defaultArg => {
-      const arg = this.args[defaultArg]
-      flags[arg.name] = flags[arg.alias] = arg.default!
+    Object.keys(ctx.defaultArgs).forEach(key => {
+      const arg = ctx.defaultArgs[key]
+      this.add(ctx, arg, arg.default!)
     })
 
-    if (this.requiredArgs.size) {
+    const requiredArgs = Object.keys(ctx.requiredArgs)
+    if (requiredArgs.length) {
       throw new Error('The following arguments are missing: ' +
-        Array.from(this.requiredArgs).toString())
+        requiredArgs
+        .map(arg => ctx.requiredArgs[arg])
+        .map(arg => `-${arg.name}/--${arg.alias}`)
+        .join(', ')
+      )
     }
 
-    return { flags, positional }
+    return ctx
   }
 
 }
