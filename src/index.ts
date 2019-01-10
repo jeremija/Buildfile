@@ -9,7 +9,7 @@ export const argumentParser = new ArgumentParser([{
   name: 'p',
   alias: 'parallel',
   description: 'Run in parallel',
-  type: 'string',
+  type: 'flag',
   default: false,
 }, {
   name: 'f',
