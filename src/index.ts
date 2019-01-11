@@ -56,6 +56,4 @@ export async function main(args: string[]) {
   await executor.execute(program)
 }
 
-if (require.main === module) {
-  bootstrap.start(main)
-}
+bootstrap.start(main, typeof require !== 'undefined' && require.main === module)

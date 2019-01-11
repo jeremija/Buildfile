@@ -1,5 +1,5 @@
 # sample comment
-ci: lint test build
+ci: lint coverage build
 
 lint:
   # command comment
@@ -13,6 +13,9 @@ build:
 
 test:
   jest
+
+coverage:
+  jest --coverage
 
 install:
   npm install

@@ -15,10 +15,17 @@ describe('Bootstrap', () => {
       const p = Promise.resolve()
       const fn = jest.fn().mockImplementation(() => p)
       const exit = jest.fn()
-      new Bootstrap(['one', 'two', 'three', 'four'], exit).start(fn)
+      new Bootstrap(['one', 'two', 'three', 'four'], exit).start(fn, true)
       await p
       expect(fn.mock.calls).toEqual([[['three', 'four']]])
       expect(exit.mock.calls).toEqual([[ 0 ]])
+    })
+
+    it('does nothing when shouldRun = false', () => {
+      const fn = jest.fn()
+      const exit = jest.fn()
+      new Bootstrap(['one', 'two', 'three', 'four'], exit).start(fn)
+      expect(fn.mock.calls.length).toBe(0)
     });
 
     [true, false].forEach(debug => {
@@ -28,7 +35,7 @@ describe('Bootstrap', () => {
         const exit = jest.fn()
         const b = new Bootstrap(['one', 'two', 'three', 'four'], exit)
         b.debug = debug
-        b.start(fn)
+        b.start(fn, true)
         await getError(p)
         expect(fn.mock.calls).toEqual([[['three', 'four']]])
         expect(exit.mock.calls).toEqual([[ 1 ]])

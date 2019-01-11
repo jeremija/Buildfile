@@ -13,6 +13,7 @@ describe('Lexer', () => {
 
   describe('read', () => {
     it('constructs entries', async () => {
+      // tslint:disable
       const source = `
 
 # comment1
@@ -36,6 +37,7 @@ test:
 
 
 `
+      // tslint:enable
       const lexer = await read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.COMMENT, value: '# comment1'},

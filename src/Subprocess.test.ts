@@ -23,6 +23,13 @@ describe('Subprocess', () => {
       expect(error.message).toMatch(/exited with code 1/)
     })
 
+    it('logs errors', async () => {
+      await getError(
+        new Subprocess('invalid-non-existing-command', StdioOptions.PIPE)
+        .run(),
+      )
+    })
+
     it('resolves on successful invocation', async () => {
       await new Subprocess('echo ok', StdioOptions.IGNORE).run()
     })
