@@ -114,7 +114,7 @@ A custom target can be run by specifying it as `build dependency`.
  - [x] Add ability to load custom files
  - [x] Add wildcard support
  - [x] Add support command line continuation via `\`
- - [ ] Add support for different types of child_process stdio attachments
+ - [x] Add support for different types of child_process stdio attachments
 
 Have an idea? Let me know!
 
