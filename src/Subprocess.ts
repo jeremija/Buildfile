@@ -1,25 +1,33 @@
 import {spawn} from 'child_process'
+import {ConsoleLogger} from './ConsoleLogger'
+
+export enum StdioOptions {
+  PIPE = 'pipe',
+  INHERIT = 'inherit',
+  IGNORE = 'ignore'
+}
+
+const logger = new ConsoleLogger()
 
 export class Subprocess {
 
-  public readonly stdio: string
-
   constructor(
     public readonly command: string,
-    public readonly log: boolean = true,
-  ) {
-    // TODO add a third option. inherit is useful to preserve color, and
-    // attaching to streams and logging that loses color
-    this.stdio = log ? 'inherit' : 'ignore'
-  }
+    public readonly stdio: StdioOptions = StdioOptions.PIPE,
+  ) {}
 
   async run () {
     return new Promise((resolve, reject) => {
       console.log('==>', this.command)
       const subprocess = spawn(this.command, [], {
         shell: true,
-        stdio: "inherit" 
+        stdio: this.stdio
       })
+
+      if (this.stdio === StdioOptions.PIPE) {
+        subprocess.stdout.on('data', data => logger.log(data))
+        subprocess.stderr.on('data', data => logger.error(data))
+      }
 
       subprocess.on('close', code => {
         if (code === 0) {

@@ -24,12 +24,23 @@ describe('ConsoleLogger', () => {
       create().log('Hi %s %s!', 'John', 'Cusack')
       expect(stdout.getData()).toEqual('Hi John Cusack!')
     })
+
+    it('handles Buffers', () => {
+      const b = Buffer.from('test string')
+      create().log(b)
+      expect(stdout.getData()).toEqual('test string')
+    })
   })
 
   describe('error', () => {
     it('logs messages to stdout stream', () => {
       create().error('Hi %s %s!', 'John', 'Cusack')
       expect(stderr.getData()).toEqual('Hi John Cusack!')
+    })
+    it('handles Buffers', () => {
+      const b = Buffer.from('test string')
+      create().error(b)
+      expect(stderr.getData()).toEqual('test string')
     })
   })
 

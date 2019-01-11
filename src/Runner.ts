@@ -1,24 +1,26 @@
 import {Command} from './Command'
 import {Target} from './Target'
-import {Subprocess} from './Subprocess'
+import {StdioOptions, Subprocess} from './Subprocess'
 
 export class Runner {
   constructor() {}
 
   async run(targets: Target[]): Promise<void> {
+    const isSingle = targets.length === 1
     await Promise.all(
-      targets.map(async target => this.runTarget(target))
+      targets.map(async target => this.runTarget(target, isSingle))
     )
   }
 
-  protected async runTarget(target: Target) {
+  protected async runTarget(target: Target, isSingle: boolean) {
     for (let command of target.commands) {
-      await this.runCommand(command)
+      await this.runCommand(command, isSingle)
     }
   }
 
-  private async runCommand(command: Command) {
-    return await new Subprocess(command.value).run()
+  private async runCommand(command: Command, isSingle: boolean) {
+    const options = isSingle ? StdioOptions.INHERIT : StdioOptions.PIPE
+    return await new Subprocess(command.value, options).run()
   }
 
 }
