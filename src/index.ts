@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-import {FileIterator} from './FileIterator'
+import {ArgumentParser} from './ArgumentParser'
 import {Compiler} from './Compiler'
+import {DebugLogger} from './DebugLogger'
+import {FileIterator} from './FileIterator'
 import {ProgramExecutor} from './ProgramExecutor'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
-import {ArgumentParser} from './ArgumentParser'
 
 export const argumentParser = new ArgumentParser([{
   name: 'f',
@@ -17,6 +18,12 @@ export const argumentParser = new ArgumentParser([{
   description: 'Help',
   type: 'flag',
   default: false,
+}, {
+  name: 'd',
+  alias: 'debug',
+  description: 'Enable debug logging',
+  type: 'flag',
+  default: false,
 }])
 
 export async function main(args: string[]) {
@@ -25,6 +32,7 @@ export async function main(args: string[]) {
     console.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
     console.log(argumentParser.help())
   }
+  DebugLogger.enableAll(!!parsed.flags.debug)
 
   const buildfile = parsed.flags.file as string
   const fileIterator = new FileIterator(buildfile)
