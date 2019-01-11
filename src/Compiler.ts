@@ -6,8 +6,6 @@ import {Parser} from './Parser'
 import {StringIterator} from './StringIterator'
 
 export class Compiler {
-  constructor() {}
-
   async compile(
     it: ICharacterIterator,
     args?: string[],

@@ -3,17 +3,16 @@ import {Target} from './Target'
 import {StdioOptions, Subprocess} from './Subprocess'
 
 export class Runner {
-  constructor() {}
 
   async run(targets: Target[]): Promise<void> {
     const isSingle = targets.length === 1
     await Promise.all(
-      targets.map(async target => this.runTarget(target, isSingle))
+      targets.map(async target => this.runTarget(target, isSingle)),
     )
   }
 
   protected async runTarget(target: Target, isSingle: boolean) {
-    for (let command of target.commands) {
+    for (const command of target.commands) {
       await this.runCommand(command, isSingle)
     }
   }

@@ -1,11 +1,19 @@
+ci: lint test build
+
+lint:
+  tslint -p .
+
+lint-fix:
+  tslint -p . --fix
+
+build:
+  tsc
+
 test:
   jest
 
 install:
   npm install
-
-speedtest:
-  echo ok
 
 example:
   ls

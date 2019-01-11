@@ -6,7 +6,7 @@ describe('ArgumentParser', () => {
     name: 'p',
     alias: 'person',
     description: 'first name',
-    type: 'string'
+    type: 'string',
   }, {
     name: 'c',
     alias: 'config',
@@ -17,7 +17,7 @@ describe('ArgumentParser', () => {
     name: 'f',
     alias: 'fetch',
     description: 'a flag',
-    default: false
+    default: false,
   }]
 
   describe('successful testCases', () => {
@@ -72,7 +72,7 @@ describe('ArgumentParser', () => {
       positional: [],
     }]
 
-    for (let testCase of testCases) {
+    for (const testCase of testCases) {
       it(`parses arguments: ${testCase.args.join(' ')}`, () => {
         const p = new ArgumentParser(testCase.options)
         const result = p.parse(testCase.args)
@@ -86,15 +86,15 @@ describe('ArgumentParser', () => {
     const testCases = [{
       options: flags,
       args: [],
-      error: /missing: -c\/--config/
+      error: /missing: -c\/--config/,
     }, {
       options: flags,
       args: ['-cf'],
-      error: /"-c" is at invalid location/
+      error: /"-c" is at invalid location/,
     }]
 
     const p = new ArgumentParser(flags)
-    for (let testCase of testCases) {
+    for (const testCase of testCases) {
       it(`should result in error: ${testCase.error}`, () => {
         expect(() => p.parse(testCase.args))
         .toThrowError(testCase.error)

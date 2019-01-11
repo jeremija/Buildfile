@@ -4,7 +4,7 @@ import {ConsoleLogger} from './ConsoleLogger'
 export enum StdioOptions {
   PIPE = 'pipe',
   INHERIT = 'inherit',
-  IGNORE = 'ignore'
+  IGNORE = 'ignore',
 }
 
 const logger = new ConsoleLogger()
@@ -16,12 +16,12 @@ export class Subprocess {
     public readonly stdio: StdioOptions = StdioOptions.PIPE,
   ) {}
 
-  async run () {
+  async run() {
     return new Promise((resolve, reject) => {
       console.log('==>', this.command)
       const subprocess = spawn(this.command, [], {
         shell: true,
-        stdio: this.stdio
+        stdio: this.stdio,
       })
 
       if (this.stdio === StdioOptions.PIPE) {
@@ -40,4 +40,3 @@ export class Subprocess {
     })
   }
 }
-

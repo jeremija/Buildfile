@@ -22,7 +22,7 @@ export interface IResult {
   positional: string[]
 }
 
-export interface IContext extends IResult{
+export interface IContext extends IResult {
   requiredArgs: IArgumentMap,
   defaultArgs: IArgumentMap,
   onlyPositionals: boolean,
@@ -34,13 +34,13 @@ export class ArgumentParser {
   public readonly args: IArgumentMap = {}
 
   constructor(protected readonly options: IArgument[]) {
-    for (let arg of options) {
+    for (const arg of options) {
       const argument = {...arg}
       if (!argument.type) {
         argument.type = 'flag'
       }
       if (argument.default !== undefined) {
-        switch(argument.type) {
+        switch (argument.type) {
           case 'string':
             argument.default = ''
             break
@@ -69,11 +69,12 @@ export class ArgumentParser {
   protected addFlags(ctx: IContext, value: string) {
     const chars = value.split('')
     chars.forEach((flag, index) => {
-      let arg = this.args[flag]
+      const arg = this.args[flag]
       if (arg.type === 'string') {
         if (index < chars.length - 1) {
           throw new Error(
-            `The argument "-${flag}" is at invalid location in "-${value}" because it requires a value`)
+            `The argument "-${flag}" is at invalid location in "-${value}" ` +
+            `because it requires a value`)
         }
         this.addValue(ctx, flag)
         return
@@ -82,10 +83,10 @@ export class ArgumentParser {
     })
   }
 
-  protected createContext(): IContext{
+  protected createContext(): IContext {
     const requiredArgs: IArgumentMap = {}
     const defaultArgs: IArgumentMap = {}
-    for (let arg of this.options) {
+    for (const arg of this.options) {
       if (arg.default !== undefined) {
         defaultArgs[arg.name] = arg
       } else if (arg.required) {
@@ -214,7 +215,7 @@ export class ArgumentParser {
         requiredArgs
         .map(arg => ctx.requiredArgs[arg])
         .map(arg => `-${arg.name}/--${arg.alias}`)
-        .join(', ')
+        .join(', '),
       )
     }
 

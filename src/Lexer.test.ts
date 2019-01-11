@@ -15,7 +15,7 @@ describe('Lexer', () => {
     it('constructs entries', async () => {
       const source = `
 
-  
+
 env:
 
   a=3

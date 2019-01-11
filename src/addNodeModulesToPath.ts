@@ -2,8 +2,8 @@ import {platform} from 'os'
 import {dirname, join} from 'path'
 import {statSync} from 'fs'
 
-export function getPathSeparator(platform: string) {
-  return platform === 'win32' ? ';' : ':'
+export function getPathSeparator(platformValue: string) {
+  return platformValue === 'win32' ? ';' : ':'
 }
 
 export function addPathVariable(
@@ -40,4 +40,3 @@ export function findNodeModulesBin(dir = process.cwd()): string | undefined {
   }
   return findNodeModulesBin(dir2)
 }
-

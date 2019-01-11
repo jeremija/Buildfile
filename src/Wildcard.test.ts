@@ -19,12 +19,12 @@ describe('Wildcard', () => {
       expect(new Wildcard('build*').match(strings)).toEqual([
         'build',
         'build:js',
-        'build:css'
+        'build:css',
       ])
       expect(new Wildcard('build*').match(strings)).toEqual([
         'build',
         'build:js',
-        'build:css'
+        'build:css',
       ])
       expect(new Wildcard('*:watch:*').match(strings)).toEqual([
         'js:watch:build',

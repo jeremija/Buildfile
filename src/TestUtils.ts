@@ -22,4 +22,3 @@ export class MemoryWritableStream extends Writable {
     return this.data
   }
 }
-

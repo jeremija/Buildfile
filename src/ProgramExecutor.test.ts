@@ -4,9 +4,9 @@ import {StringIterator} from './StringIterator'
 
 describe('ProgramExecutor', () => {
 
-  async function run(source: string, targets: string[]) {
+  async function run(src: string, targets: string[]) {
     const compiler = new Compiler()
-    const program = await compiler.compile(new StringIterator(source), targets)
+    const program = await compiler.compile(new StringIterator(src), targets)
     const executor = new ProgramExecutor()
     await executor.execute(program)
   }

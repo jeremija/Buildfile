@@ -5,7 +5,7 @@ import {Target} from './Target'
 
 describe('Runner', () => {
 
-  let source = `a:
+  const source = `a:
   echo a
 b:
   echo b`

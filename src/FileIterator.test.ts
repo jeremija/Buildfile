@@ -9,7 +9,7 @@ describe('FileIterator', () => {
     const i = new FileIterator(filename)
     let buffer = ''
     let c: string | null
-    while((c = await i.next()) !== null) {
+    while ((c = await i.next()) !== null) {
       buffer += c
     }
     expect(buffer).toEqual(readFileSync(filename, 'utf8'))

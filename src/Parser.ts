@@ -24,11 +24,11 @@ export class Parser {
     const ctx: IContext = {
       targetsSet: new Set(targets),
       targets,
-      isParallel: false
+      isParallel: false,
     }
     entries.forEach(entry => {
       const target = ctx.target!
-      switch(entry.type) {
+      switch (entry.type) {
         case (EntryType.TARGET):
           ctx.target = new Target(entry.value)
           logger.log('addTarget', entry.value)
@@ -67,7 +67,7 @@ export class Parser {
 
   protected addDependency(
     ctx: IContext,
-    dependency: string
+    dependency: string,
   ) {
     const target = ctx.target!
     if (!ctx.isParallel) {
@@ -84,9 +84,8 @@ export class Parser {
   ) {
     const target = ctx.target!
     logger.log('addWildcard: %s', target.name, dependency)
-    for (let d of new Wildcard(dependency).match(ctx.targets)) {
+    for (const d of new Wildcard(dependency).match(ctx.targets)) {
       this.addDependency(ctx, d)
     }
   }
 }
-

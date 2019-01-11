@@ -11,7 +11,7 @@ test`
     const i = new StringIterator(test)
     let buffer = ''
     let c: string | null
-    while((c = i.next()) !== null) {
+    while ((c = i.next()) !== null) {
       buffer += c
     }
     expect(buffer).toEqual(test)

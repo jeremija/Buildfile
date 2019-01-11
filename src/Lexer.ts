@@ -85,7 +85,7 @@ export class Lexer {
   }
 
   protected processDependencyName(c: string) {
-    switch(c) {
+    switch (c) {
       case ':':
         this.fail('Dependency names cannot contain colons')
       case ' ':
@@ -115,7 +115,7 @@ export class Lexer {
   }
 
   protected processCommand(c: string) {
-    switch(c) {
+    switch (c) {
       case ' ':
         if (!this.value) {
           this.indent += 1
@@ -155,7 +155,7 @@ export class Lexer {
   protected processToken(c: string) {
     this.position += 1
 
-    switch(this.entryType) {
+    switch (this.entryType) {
       case EntryType.TARGET:
         this.processTargetName(c)
         break
@@ -167,7 +167,7 @@ export class Lexer {
         break
     }
 
-    switch(c) {
+    switch (c) {
       case '\r':
         this.newLine()
         break

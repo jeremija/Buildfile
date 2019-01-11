@@ -18,7 +18,7 @@ export class Target {
       // do not create a new group if the current one is already empty
       return
     }
-    let group = new DependencyGroup()
+    const group = new DependencyGroup()
     this.dependencyGroups.push(group)
   }
 
@@ -32,4 +32,3 @@ export class Target {
   }
 
 }
-

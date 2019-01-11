@@ -2,7 +2,6 @@ import {DebugLogger} from './DebugLogger'
 
 describe('DebugLogger', () => {
 
-
   describe('enable and disable', () => {
     it('enables and disables a logger', () => {
       let logger = DebugLogger.getLogger('test')

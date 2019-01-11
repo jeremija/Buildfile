@@ -6,5 +6,3 @@ export class Entry {
     readonly value: string,
   ) {}
 }
-
-

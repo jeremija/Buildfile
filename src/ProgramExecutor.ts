@@ -30,8 +30,8 @@ export class ProgramExecutor {
   }
 
   protected async executeDependencies(program: IProgram, targets: Target[]) {
-    for (let target of targets) {
-      for (let dependencyGroup of target.dependencyGroups) {
+    for (const target of targets) {
+      for (const dependencyGroup of target.dependencyGroups) {
         if (dependencyGroup.targetNames.length) {
           await this.executeTargets(program, dependencyGroup.targetNames)
         }
