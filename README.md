@@ -114,6 +114,21 @@ target
 
 A custom target can be run by specifying it as `build dependency`.
 
+# Variables
+
+Environment variables can be set:
+
+```Makefile
+echo:
+  echo $args
+```
+
+```bash
+$ args=test build
+==> args=test build
+test
+```
+
 # TODO
 
  - [x] Implement basic syntax parsing
@@ -124,6 +139,7 @@ A custom target can be run by specifying it as `build dependency`.
  - [x] Add support command line continuation via `\`
  - [x] Add support for different types of child_process stdio attachments
  - [x] Add support for comments beginning with `#`
+ - [ ] Add ability to specify subprocess environment variables at the end
 
 Have an idea? Let me know!
 
