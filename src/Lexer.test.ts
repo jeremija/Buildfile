@@ -19,7 +19,10 @@ describe('Lexer', () => {
 env:
 
   a=3
-  b=4
+  b=4 \\
+  d=5
+  e=6 \\\r
+  f=7
 
   c=5
 
@@ -35,7 +38,8 @@ test:
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},
-        {type: EntryType.COMMAND, value: 'b=4'},
+        {type: EntryType.COMMAND, value: 'b=4 \\\n  d=5'},
+        {type: EntryType.COMMAND, value: 'e=6 \\\r\n  f=7'},
         {type: EntryType.COMMAND, value: 'c=5'},
         {type: EntryType.TARGET, value: 'test'},
         {type: EntryType.COMMAND, value: 'command1 command2'},

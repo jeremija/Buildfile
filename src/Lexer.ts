@@ -7,6 +7,7 @@ export class Lexer {
   protected position = 0
   protected line = 1
   protected lastChar: string = ''
+  protected lastChar2: string = ''
 
   protected indent = 0
   protected value = ''
@@ -106,8 +107,17 @@ export class Lexer {
         }
         this.addToValue(c)
         return
+      case '\\':
+        this.addToValue(c)
+        return
       case '\n':
       case '\r':
+        if (this.lastChar === '\\' ||
+            this.lastChar === '\r' && c === '\n' && this.lastChar2 === '\\') {
+          // handle line continuations
+          this.addToValue(c)
+          return
+        }
         if (!this.value) {
           this.indent = 0
           this.entryType = EntryType.TARGET
@@ -154,6 +164,7 @@ export class Lexer {
         break
     }
 
+    this.lastChar2 = this.lastChar
     this.lastChar = c
   }
 
