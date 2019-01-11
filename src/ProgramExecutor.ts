@@ -12,7 +12,7 @@ export class ProgramExecutor {
     await this.executeTargets(program, [program.mainTarget])
   }
 
-  protected async executeTargets(program: IProgram, targets: string[] = []) {
+  protected async executeTargets(program: IProgram, targets: string[]) {
     logger.log('executeTargets: %s', targets)
 
     const selectedTargets = targets.map(t => {

@@ -23,6 +23,7 @@ describe('DebugLogger', () => {
 
       logger.log('test')
       logger.error('test')
+      logger.error('test: %s', 'value')
     })
   })
 
