@@ -11,7 +11,8 @@ Additionally, a `-p` flag can be used to run them in parallel.
 No dependencies. That's right, only Node.JS is required.
 
 Install with: `npm install -g buildfile`
-And run with: `build`
+
+Run with: `build [target1 target2 ...]`
 
 # why
 
@@ -100,9 +101,7 @@ dependency
 target
 ```
 
-A custom target can be run by specifying it as  `build dependency`.
-
-```
+A custom target can be run by specifying it as `build dependency`.
 
 # TODO
 
