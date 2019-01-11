@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import {ArgumentParser} from './ArgumentParser'
+import {Bootstrap} from './Bootstrap'
 import {Compiler} from './Compiler'
 import {DebugLogger} from './DebugLogger'
 import {FileIterator} from './FileIterator'
 import {ProgramExecutor} from './ProgramExecutor'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
+
+const bootstrap = new Bootstrap()
 
 export const argumentParser = new ArgumentParser([{
   name: 'f',
@@ -33,7 +36,9 @@ export async function main(args: string[]) {
     console.log(argumentParser.help())
     console.log('  -p, --parallel        Run targets in parallel\n')
   }
+
   DebugLogger.enableAll(!!parsed.flags.debug)
+  bootstrap.debug = !!parsed.flags.debug
 
   const buildfile = parsed.flags.file as string
   const fileIterator = new FileIterator(buildfile)
@@ -52,10 +57,5 @@ export async function main(args: string[]) {
 }
 
 if (require.main === module) {
-  main(process.argv.slice(2))
-  .then(() => process.exit(0))
-  .catch(err => {
-    console.error('! ', err.stack)
-    process.exit(1)
-  })
+  bootstrap.start(main)
 }
