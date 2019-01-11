@@ -16,7 +16,7 @@ Run with: `build [target1 target2 ...]`
 
 # Why
 
-Instead of having this in your `package.json`:
+Instead of having this in `package.json`:
 
 ```json
   "scripts": {
