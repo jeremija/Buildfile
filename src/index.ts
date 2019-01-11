@@ -31,6 +31,7 @@ export async function main(args: string[]) {
   if (parsed.flags.help) {
     console.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
     console.log(argumentParser.help())
+    console.log('  -p, --parallel        Run targets in parallel\n')
   }
   DebugLogger.enableAll(!!parsed.flags.debug)
 
