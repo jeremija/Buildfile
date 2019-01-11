@@ -123,7 +123,7 @@ A custom target can be run by specifying it as `build dependency`.
  - [x] Add wildcard support
  - [x] Add support command line continuation via `\`
  - [x] Add support for different types of child_process stdio attachments
- - [ ] Add support for comments beginning with `#`
+ - [x] Add support for comments beginning with `#`
 
 Have an idea? Let me know!
 
