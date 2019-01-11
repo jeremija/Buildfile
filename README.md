@@ -21,26 +21,26 @@ Instead of having this in `package.json`:
 ```json
   "scripts": {
     "test": "jest",
-    "build": "npm-run-all *_build *_minify",
+    "build": "npm-run-all *.build *.minify",
     "clean": "find src/ -type f -name '*.js' | xargs rm",
-    "watch": "npm-run-all html_build css_build _watch",
-    "_watch": "npm-run-all -p *_watch",
+    "watch": "npm-run-all html.build css.build _watch",
+    "_watch": "npm-run-all -p *.watch",
     "lint": "tslint --project .",
 
-    "js_build": "browserify src/client/index.tsx -p [ tsify --project .] -g [ loose-envify purge --NODE_ENV production ] -v -o build/client.js",
-    "js_watch": "watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js",
-    "js_minify": "terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js",
+    "js.build": "browserify src/client/index.tsx -p [ tsify --project .] -g [ loose-envify purge --NODE_ENV production ] -v -o build/client.js",
+    "js.watch": "watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js",
+    "js.minify": "terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js",
 
-    "css_build": "node-sass -o build/ --output-style compressed src/scss/style.scss",
-    "css_watch": "node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss",
-    "html_build": "mustache src/views/index.json src/views/index.mustache > build/index.html",
+    "css.build": "node-sass -o build/ --output-style compressed src/scss/style.scss",
+    "css.watch": "node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss",
+    "html.build": "mustache src/views/index.json src/views/index.mustache > build/index.html",
   },
 ```
 
 one can write a `Buildfile` with the following contents:
 
 ```Makefile
-build: *_build *_minify
+build: *.build *.minify
 
 test:
   jest
@@ -48,27 +48,27 @@ test:
 clean:
   find src/ -type f -name '*.js' | xargs rm
 
-watch: build_* --parallel watch_*
+watch: *.build --parallel *.watch
 
 lint:
   tslint --project .
 
-js_build:
+js.build:
   browserify src/client/index.tsx \
     -p [ tsify --project .] \
     -g [ loose-envify purge --NODE_ENV production ] \
     -v -o build/client.js
-js_watch:
+js.watch:
   watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js
-js_minify:
+js.minify:
   terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js
 
-css_build:
+css.build:
   node-sass -o build/ --output-style compressed src/scss/style.scss
-css_watch:
+css.watch:
   node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss
 
-html_build:
+html.build:
   mustache src/views/index.json src/views/index.mustache > build/index.html
 ```
 
