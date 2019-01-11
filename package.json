@@ -1,6 +1,6 @@
 {
   "name": "buildfile",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Run node.js build scripts quickly",
   "main": "src/index.js",
   "bin": {
