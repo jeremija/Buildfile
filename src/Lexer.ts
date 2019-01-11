@@ -153,7 +153,7 @@ export class Lexer {
   }
 
   protected processComment(c: string) {
-    switch(c) {
+    switch (c) {
       case '\n':
       case '\r':
         this.addEntry(EntryType.COMMENT)
