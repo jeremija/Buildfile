@@ -21,66 +21,74 @@ Instead of having this in your `package.json`:
 ```json
   "scripts": {
     "test": "jest",
+    "build": "npm-run-all *_build *_minify",
     "clean": "find src/ -type f -name '*.js' | xargs rm",
-    "watch": "npm-run-all build:html build:css _watch",
-    "_watch": "npm-run-all -p watch:*",
+    "watch": "npm-run-all html_build css_build _watch",
+    "_watch": "npm-run-all -p *_watch",
     "lint": "tslint --project .",
-    "build": "npm-run-all build:* minify:*",
-    "build:js": "browserify src/client/index.tsx -p [ tsify --project .] -g [ loose-envify purge --NODE_ENV production ] -v -o build/client.js",
-    "minify:js": "terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js",
-    "watch:js": "watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js",
-    "build:css": "node-sass -o build/ --output-style compressed src/scss/style.scss",
-    "watch:css": "node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss",
-    "build:html": "mustache src/views/index.json src/views/index.mustache > build/index.html",
-    "rollup:js": "rollup -c ./rollup.config.js",
-    "rollup:js:watch": "rollup -c ./rollup.config.js -w"
+
+    "js_build": "browserify src/client/index.tsx -p [ tsify --project .] -g [ loose-envify purge --NODE_ENV production ] -v -o build/client.js",
+    "js_watch": "watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js",
+    "js_minify": "terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js",
+
+    "css_build": "node-sass -o build/ --output-style compressed src/scss/style.scss",
+    "css_watch": "node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss",
+    "html_build": "mustache src/views/index.json src/views/index.mustache > build/index.html",
   },
 ```
 
 one can write a `Buildfile` with the following contents:
 
 ```Makefile
+build: *_build *_minify
+
 test:
   jest
 
 clean:
   find src/ -type f -name '*.js' | xargs rm
 
-watch: build_html build_css _watch
-
-_watch: -p watch-js watch-css 
+watch: build_* --parallel watch_*
 
 lint:
   tslint --project .
 
-build: build_html build_js build_css minify_js
-
-build_css:
-  node-sass -o build/ --output-style compressed src/scss/style.scss
-
-build_js:
+js_build:
   browserify src/client/index.tsx \
     -p [ tsify --project .] \
     -g [ loose-envify purge --NODE_ENV production ] \
     -v -o build/client.js
-
-watch_js:
+js_watch:
   watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js
-
-minify_js:
+js_minify:
   terser --ecma 5 --compress -o build/client.min.js --mangle -- build/client.js
 
-watch_css:
+css_build:
+  node-sass -o build/ --output-style compressed src/scss/style.scss
+css_watch:
   node-sass -o build/ --source-map true --source-map-contents true -w src/scss/style.scss
 
-build_html:
+html_build:
   mustache src/views/index.json src/views/index.mustache > build/index.html
+```
 
-rollup_js:
-  rollup -c ./rollup.config.js
+This is easier to read, line continuation is allowed, and tasks can be executed
+in parallel via the `-p` or `--parallel` flag.
 
-rollup_js_watch: 
-  rollup -c ./rollup.config.js -w
+To run a target, simply type:
+
+```bash
+build       # runs the first target (build)
+build test  # runs test target
+build watch # runs the watch target
+```
+
+If you installed build locally, it can be invoked by running it via either:
+
+```bash
+npx build
+# or
+./node_modules/.bin/build
 ```
 
 # Basic syntax
@@ -115,6 +123,7 @@ A custom target can be run by specifying it as `build dependency`.
  - [x] Add wildcard support
  - [x] Add support command line continuation via `\`
  - [x] Add support for different types of child_process stdio attachments
+ - [ ] Add support for comments beginning with `#`
 
 Have an idea? Let me know!
 
