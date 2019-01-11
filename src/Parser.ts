@@ -10,12 +10,20 @@ import {Wildcard} from './Wildcard'
 
 const logger = new DebugLogger('parser')
 
+// interface IContext {
+//   targets: string[],
+//   targetsSet: Set<string>,
+//   target?: Target
+//   isParallel: boolean
+// }
+
 export class Parser {
   public readonly program = new Program()
 
   parse(entries: Entry[], targets: string[]): IProgram {
     const targetsSet = new Set(targets)
     let target: Target | undefined = undefined
+    let isParallel = false
     entries.forEach(entry => {
       switch(entry.type) {
         case (EntryType.TARGET):
@@ -31,18 +39,17 @@ export class Parser {
               targetsSet.has(dep),
               `Target specified as dependency not found: "${dep}"`,
             )
-            logger.log('addDependency: %s', dep)
-            target!.addDependency(dep)
+            this.addDependency(target!, dep, isParallel)
             break
           }
-          logger.log('addWildcard: %s', dep)
-          this.addWildcard(targets, target!, dep)
+          this.addWildcard(targets, target!, dep, isParallel)
           break
         case (EntryType.PARALLEL_FLAG):
           assert.ok(target,
             `A dependency must have a parent target: ${entry.value}`)
           logger.log('addGroup')
           target!.addGroup()
+          isParallel = true
           break
         case (EntryType.COMMAND):
           const command = new Command(entry.value)
@@ -55,13 +62,28 @@ export class Parser {
     return this.program
   }
 
+  protected addDependency(
+    target: Target,
+    dependency: string,
+    isParallel: boolean,
+  ) {
+    if (!isParallel) {
+      logger.log('addGroup')
+      target.addGroup()
+    }
+    logger.log('addDependency: %s', target.name, dependency)
+    target.addDependency(dependency)
+  }
+
   protected addWildcard(
     targets: string[],
     target: Target,
     dependency: string,
+    isParallel: boolean,
   ) {
+    logger.log('addWildcard: %s', target.name, dependency)
     for (let d of new Wildcard(dependency).match(targets)) {
-      target.addDependency(d)
+      this.addDependency(target, d, isParallel)
     }
   }
 }
