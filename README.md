@@ -14,7 +14,7 @@ Install with: `npm install -g buildfile`
 
 Run with: `build [target1 target2 ...]`
 
-# why
+# Why
 
 Instead of having this in your `package.json`:
 
@@ -59,7 +59,10 @@ build_css:
   node-sass -o build/ --output-style compressed src/scss/style.scss
 
 build_js:
-  browserify src/client/index.tsx -p [ tsify --project .] -g [ loose-envify purge --NODE_ENV production ] -v -o build/client.js<Paste>
+  browserify src/client/index.tsx \
+    -p [ tsify --project .] \
+    -g [ loose-envify purge --NODE_ENV production ] \
+    -v -o build/client.js
 
 watch_js:
   watchify src/client/index.tsx -p [tsify --project .] -v -d -o build/client.js
@@ -77,7 +80,7 @@ rollup_js:
   rollup -c ./rollup.config.js
 
 rollup_js_watch: 
-	rollup -c ./rollup.config.js -w
+  rollup -c ./rollup.config.js -w
 ```
 
 # Basic syntax
