@@ -10,52 +10,55 @@ import {Wildcard} from './Wildcard'
 
 const logger = new DebugLogger('parser')
 
-// interface IContext {
-//   targets: string[],
-//   targetsSet: Set<string>,
-//   target?: Target
-//   isParallel: boolean
-// }
+interface IContext {
+  targets: string[],
+  targetsSet: Set<string>,
+  target?: Target
+  isParallel: boolean
+}
 
 export class Parser {
   public readonly program = new Program()
 
   parse(entries: Entry[], targets: string[]): IProgram {
-    const targetsSet = new Set(targets)
-    let target: Target | undefined = undefined
-    let isParallel = false
+    const ctx: IContext = {
+      targetsSet: new Set(targets),
+      targets,
+      isParallel: false
+    }
     entries.forEach(entry => {
+      const target = ctx.target!
       switch(entry.type) {
         case (EntryType.TARGET):
-          target = new Target(entry.value)
+          ctx.target = new Target(entry.value)
           logger.log('addTarget', entry.value)
-          this.program.addTarget(target)
+          this.program.addTarget(ctx.target)
           break
         case (EntryType.DEPENDENCY):
           const dep = entry.value
           assert.ok(target, `A dependency must have a parent target: ${dep}`)
           if (dep.indexOf('*') === -1) {
             assert.ok(
-              targetsSet.has(dep),
+              ctx.targetsSet.has(dep),
               `Target specified as dependency not found: "${dep}"`,
             )
-            this.addDependency(target!, dep, isParallel)
+            this.addDependency(ctx, dep)
             break
           }
-          this.addWildcard(targets, target!, dep, isParallel)
+          this.addWildcard(ctx, dep)
           break
         case (EntryType.PARALLEL_FLAG):
           assert.ok(target,
             `A dependency must have a parent target: ${entry.value}`)
           logger.log('addGroup')
-          target!.addGroup()
-          isParallel = true
+          target.addGroup()
+          ctx.isParallel = true
           break
         case (EntryType.COMMAND):
           const command = new Command(entry.value)
           assert.ok(target, 'A command must have a parent target: ' + command)
           logger.log('addCommand: %s', command.value)
-          target!.addCommand(command)
+          target.addCommand(command)
           break
       }
     })
@@ -63,11 +66,11 @@ export class Parser {
   }
 
   protected addDependency(
-    target: Target,
-    dependency: string,
-    isParallel: boolean,
+    ctx: IContext,
+    dependency: string
   ) {
-    if (!isParallel) {
+    const target = ctx.target!
+    if (!ctx.isParallel) {
       logger.log('addGroup')
       target.addGroup()
     }
@@ -76,14 +79,13 @@ export class Parser {
   }
 
   protected addWildcard(
-    targets: string[],
-    target: Target,
+    ctx: IContext,
     dependency: string,
-    isParallel: boolean,
   ) {
+    const target = ctx.target!
     logger.log('addWildcard: %s', target.name, dependency)
-    for (let d of new Wildcard(dependency).match(targets)) {
-      this.addDependency(target, d, isParallel)
+    for (let d of new Wildcard(dependency).match(ctx.targets)) {
+      this.addDependency(ctx, d)
     }
   }
 }
