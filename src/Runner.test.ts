@@ -1,9 +1,9 @@
 import {Compiler} from './Compiler'
-import {SerialRunner} from './SerialRunner'
+import {Runner} from './Runner'
 import {StringIterator} from './StringIterator'
 import {Target} from './Target'
 
-describe('SerialRunner', () => {
+describe('Runner', () => {
 
   let source = `a:
   echo a
@@ -16,8 +16,8 @@ b:
     targets = Object.keys(program.targets).map(k => program.targets[k])
   })
 
-  it('runs everything serially', async () => {
-    await new SerialRunner().run(targets)
+  it('runs everything in parallel', async () => {
+    await new Runner().run(targets)
   })
 
 })

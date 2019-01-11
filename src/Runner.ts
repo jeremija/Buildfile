@@ -2,10 +2,14 @@ import {Command} from './Command'
 import {Target} from './Target'
 import {Subprocess} from './Subprocess'
 
-export abstract class Runner {
+export class Runner {
   constructor() {}
 
-  abstract async run(targets: Target[]): Promise<void>
+  async run(targets: Target[]): Promise<void> {
+    await Promise.all(
+      targets.map(async target => this.runTarget(target))
+    )
+  }
 
   protected async runTarget(target: Target) {
     for (let command of target.commands) {

@@ -1,6 +1,9 @@
-import {Entry} from './Entry'
+import {DebugLogger} from './DebugLogger'
 import {EntryType} from './EntryType'
+import {Entry} from './Entry'
 import {ICharacterIterator} from './ICharacterIterator'
+
+const logger = new DebugLogger('lexer')
 
 export class Lexer {
 
@@ -15,6 +18,7 @@ export class Lexer {
   protected entryType: EntryType = EntryType.TARGET
 
   public readonly entries: Entry[] = []
+  public readonly targets: string[] = []
 
   constructor(protected readonly it: ICharacterIterator) {}
 
@@ -43,6 +47,12 @@ export class Lexer {
     this.value += c
   }
 
+  protected addEntry(entryType: EntryType) {
+    logger.log('addEntry: [%d %d] %s %s',
+      this.line, this.position, entryType, this.value)
+    this.entries.push(new Entry(entryType, this.value))
+  }
+
   protected processTargetName(c: string) {
     switch (c) {
       case ' ':
@@ -64,7 +74,8 @@ export class Lexer {
         if (!this.value.length) {
           this.fail('Cannot define a target without a name')
         }
-        this.entries.push(new Entry(EntryType.TARGET, this.value))
+        this.addEntry(EntryType.TARGET)
+        this.targets.push(this.value)
         this.entryType = EntryType.DEPENDENCY
         this.value = ''
         return
@@ -81,13 +92,18 @@ export class Lexer {
         if (!this.value) {
           return
         }
-        this.entries.push(new Entry(EntryType.DEPENDENCY, this.value))
+        if (this.value === '-p' || this.value === '--parallel') {
+          this.addEntry(EntryType.PARALLEL_FLAG)
+          this.value = ''
+          return
+        }
+        this.addEntry(EntryType.DEPENDENCY)
         this.value = ''
         return
       case '\n':
       case '\r':
         if (this.value) {
-          this.entries.push(new Entry(EntryType.DEPENDENCY, this.value))
+          this.addEntry(EntryType.DEPENDENCY)
         }
         this.entryType = EntryType.TARGET
         this.value = ''
@@ -126,7 +142,7 @@ export class Lexer {
         if (this.indent !== 2) {
           this.fail('Commands must be indented with 2 spaces!')
         }
-        this.entries.push(new Entry(EntryType.COMMAND, this.value))
+        this.addEntry(EntryType.COMMAND)
         this.value = ''
         this.indent = 0
         this.entryType = EntryType.TARGET

@@ -6,12 +6,6 @@ import {addNodeModulesToPath} from './addNodeModulesToPath'
 import {ArgumentParser} from './ArgumentParser'
 
 export const argumentParser = new ArgumentParser([{
-  name: 'p',
-  alias: 'parallel',
-  description: 'Run in parallel',
-  type: 'flag',
-  default: false,
-}, {
   name: 'f',
   alias: 'file',
   description: 'Buildfile to use',
@@ -35,7 +29,7 @@ export async function main(args: string[]) {
   const buildfile = parsed.flags.file as string
   const fileIterator = new FileIterator(buildfile)
   const compiler = new Compiler()
-  const program = await compiler.compile(fileIterator)
+  const program = await compiler.compile(fileIterator, parsed.positional)
 
   if (parsed.flags.help) {
     console.log('Available targets: ' + program.targetNames.join(', '))
@@ -44,14 +38,8 @@ export async function main(args: string[]) {
 
   addNodeModulesToPath()
 
-  args = parsed.positional
-  if (parsed.flags.parallel) {
-    // special target, executes build in parallel
-    args = ['-p', ...args]
-  }
-
   const executor = new ProgramExecutor()
-  await executor.execute(program, args)
+  await executor.execute(program)
 }
 
 if (require.main === module) {

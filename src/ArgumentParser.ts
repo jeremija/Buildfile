@@ -164,6 +164,7 @@ export class ArgumentParser {
     const ctx = this.createContext()
 
     for (let value of args) {
+      const origValue = value
       if (ctx.onlyPositionals) {
         ctx.positional.push(value)
         continue
@@ -194,7 +195,7 @@ export class ArgumentParser {
         continue
       }
 
-      ctx.positional.push(value)
+      ctx.positional.push(origValue)
     }
 
     if (ctx.pending) {

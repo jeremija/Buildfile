@@ -1,28 +1,19 @@
 import assert from 'assert'
 import {IProgram} from './IProgram'
-import {ParallelRunner} from './ParallelRunner'
-import {SerialRunner} from './SerialRunner'
+import {Runner} from './Runner'
 import {Target} from './Target'
+import {DebugLogger} from './DebugLogger'
+
+const logger = new DebugLogger('programexecutor')
 
 export class ProgramExecutor {
 
-  protected async executeDependencies(program: IProgram, targets: Target[]) {
-    for (let target of targets) {
-      if (target.dependencies.length) {
-        await this.execute(program, target.dependencies)
-      }
-    }
+  async execute(program: IProgram) {
+    await this.executeTargets(program, [program.mainTarget])
   }
 
-  async execute(program: IProgram, targets: string[] = []) {
-    if (!targets.length) {
-      targets = [program.mainTarget]
-    }
-
-    const parallel = targets[0] === '-p'
-    if (parallel) {
-      targets = targets.slice(1)
-    }
+  protected async executeTargets(program: IProgram, targets: string[] = []) {
+    logger.log('executeTargets: %s', targets)
 
     const selectedTargets = targets.map(t => {
       assert.ok(
@@ -34,7 +25,18 @@ export class ProgramExecutor {
 
     await this.executeDependencies(program, selectedTargets)
 
-    const runner = parallel ? new ParallelRunner() : new SerialRunner()
+    const runner = new Runner()
     await runner.run(selectedTargets)
   }
+
+  protected async executeDependencies(program: IProgram, targets: Target[]) {
+    for (let target of targets) {
+      for (let dependencyGroup of target.dependencyGroups) {
+        if (dependencyGroup.targetNames.length) {
+          await this.executeTargets(program, dependencyGroup.targetNames)
+        }
+      }
+    }
+  }
+
 }

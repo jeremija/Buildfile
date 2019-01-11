@@ -88,7 +88,7 @@ d:
       const lexer = await read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'a'},
-        {type: EntryType.DEPENDENCY, value: '-p'},
+        {type: EntryType.PARALLEL_FLAG, value: '-p'},
         {type: EntryType.DEPENDENCY, value: 'b'},
         {type: EntryType.DEPENDENCY, value: 'c'},
         {type: EntryType.TARGET, value: 'b'},
