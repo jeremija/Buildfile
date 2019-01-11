@@ -15,7 +15,7 @@ describe('Lexer', () => {
     it('constructs entries', async () => {
       const source = `
 
-
+# comment1
 env:
 
   a=3
@@ -23,6 +23,7 @@ env:
   d=5
   e=6 \\\r
   f=7
+  # comment2
 
   c=5
 
@@ -36,10 +37,12 @@ test:
 `
       const lexer = await read(source)
       expect(lexer.entries).toEqual([
+        {type: EntryType.COMMENT, value: '# comment1'},
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},
         {type: EntryType.COMMAND, value: 'b=4 \\\n  d=5'},
         {type: EntryType.COMMAND, value: 'e=6 \\\r\n  f=7'},
+        {type: EntryType.COMMENT, value: '# comment2'},
         {type: EntryType.COMMAND, value: 'c=5'},
         {type: EntryType.TARGET, value: 'test'},
         {type: EntryType.COMMAND, value: 'command1 command2'},

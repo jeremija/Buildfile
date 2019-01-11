@@ -3,4 +3,5 @@ export enum EntryType {
   COMMAND = 'COMMAND',
   PARALLEL_FLAG = 'PARALLEL_FLAG',
   DEPENDENCY = 'DEPENDENCY',
+  COMMENT = 'COMMENT',
 }

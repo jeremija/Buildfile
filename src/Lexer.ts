@@ -152,10 +152,31 @@ export class Lexer {
     }
   }
 
+  protected processComment(c: string) {
+    switch(c) {
+      case '\n':
+      case '\r':
+        this.addEntry(EntryType.COMMENT)
+        this.value = ''
+        this.indent = 0
+        this.entryType = EntryType.TARGET
+        return
+      default:
+        this.addToValue(c)
+    }
+  }
+
   protected processToken(c: string) {
     this.position += 1
 
+    if (c === '#' && this.value === '') {
+      this.entryType = EntryType.COMMENT
+    }
+
     switch (this.entryType) {
+      case EntryType.COMMENT:
+        this.processComment(c)
+        break
       case EntryType.TARGET:
         this.processTargetName(c)
         break
