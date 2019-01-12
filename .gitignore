@@ -58,4 +58,9 @@ typings/
 # dotenv environment variables file
 .env
 
+jest.setup.js
+jest.setup.d.ts
+jest.setup.js.map
 src/*.js
+src/*.d.ts
+src/*.js.map

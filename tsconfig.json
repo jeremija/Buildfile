@@ -11,6 +11,8 @@
     "plugins": [{
       "name": "typescript-tslint-plugin",
       "suppressWhileTypeErrorsPresent": true
-    }]
+    }],
+    "declaration": true,
+    "sourceMap": true
   }
 }

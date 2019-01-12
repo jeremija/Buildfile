@@ -1,4 +1,4 @@
-import {main} from './index'
+import {main} from './cli'
 import {join} from 'path'
 
 describe('main', () => {
