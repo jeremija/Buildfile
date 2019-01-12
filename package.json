@@ -27,10 +27,21 @@
     "url": "git+https://github.com/jeremija/buildfile.git"
   },
   "keywords": [
-    "node",
     "build",
-    "assistant",
-    "makefile"
+    "buildfile",
+    "cli",
+    "command",
+    "commandline",
+    "makefile",
+    "npm",
+    "npm-scripts",
+    "parallel",
+    "run",
+    "sequential",
+    "serial",
+    "script",
+    "task",
+    "tool"
   ],
   "author": "Jerko Steiner",
   "license": "MIT",
