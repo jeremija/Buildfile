@@ -3,7 +3,7 @@ import {join} from 'path'
 
 describe('main', () => {
 
-  const testBuildFile = join(__dirname, '..', 'Buildfile.test')
+  const testBuildFile = join(__dirname, '..', 'test-files', 'Buildfile.test')
 
   describe('-h/--help', () => {
     it('prints help', async () => {
