@@ -21,7 +21,8 @@
     "build": "tsc",
     "clean": "rm -f jest.setup.{js,d.ts,.js.map} src/*.{js,d.ts,js.map}",
     "test": "jest",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "npm run clean && npm run build",
+    "postpublish": "npm run clean"
   },
   "repository": {
     "type": "git",
