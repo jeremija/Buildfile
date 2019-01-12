@@ -21,8 +21,8 @@ install:
   npm install
 
 clean:
-  rm -f jest.setup.js
-  rm -f src/*.js
+  rm -f jest.setup.{js,d.ts,js.map}
+  rm -f src/*.{js,d.ts,js.map}
 
 example:
   ls

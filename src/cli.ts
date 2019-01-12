@@ -8,7 +8,7 @@ import {ProgramExecutor} from './ProgramExecutor'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
 import {out} from './config'
 
-const bootstrap = new Bootstrap()
+export const bootstrap = new Bootstrap()
 
 export const argumentParser = new ArgumentParser([{
   name: 'f',
