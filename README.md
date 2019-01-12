@@ -3,8 +3,9 @@
 [![Build Status](https://travis-ci.com/jeremija/Buildfile.svg?branch=master)](https://travis-ci.com/jeremija/Buildfile) [![npm](https://img.shields.io/npm/v/buildfile.svg)](https://www.npmjs.com/package/buildfile)
 
 This is a task runner utility similar to Makefile, but it does not check the
-files of the timestamps. It uses the same concept of targets, dependencies,
-and commands, but all targets are ".PHONY".
+files of the timestamps. It uses the familiar concept of targets, dependencies,
+and commands, but all targets are [phony][phony]. Supports wildcards using the
+`*` character.
 
 Additionally, a `-p` flag can be used to run them in parallel.
 
@@ -149,3 +150,5 @@ Have an idea? Let me know!
 # License
 
 MIT
+
+[phony]: https://www.gnu.org/software/make/manual/html_node/Phony-Targets.html
