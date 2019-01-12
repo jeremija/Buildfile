@@ -4,5 +4,3 @@ node_js:
   - "10"
 script:
   - jest --coverage
-notifications:
-  email: false
