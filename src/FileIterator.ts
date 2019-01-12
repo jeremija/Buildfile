@@ -18,7 +18,7 @@ export class FileIterator implements ICharacterIterator {
     })
   }
 
-  protected async startReading() {
+  async open(): Promise<this> {
     assert(!this.readable, 'FileIterator should only be used once per file')
 
     const readable = this.readable = createReadStream(this.filename)
@@ -30,23 +30,17 @@ export class FileIterator implements ICharacterIterator {
     readable.on('readable', () => {
       this.isReadableResolve()
     })
-    await this.readable
-    await this.read()
+    await this.isReadable
+    // read first character into the buffer
+    this.next()
+    return this
   }
 
-  protected async read() {
-    if (!this.readable) {
-      await this.startReading()
-    }
-    await this.isReadable
-    assert.ok(this.readable, 'Cannot get a character when there is no stream')
+  next(): string | null {
+    assert.ok(this.readable, 'No readable stream. Did you call open()?')
     this.buffer[0] = this.buffer[1]
     this.buffer[1] = this.readable!.read(1) as string | null
     return this.buffer[0]
-  }
-
-  async next(): Promise<string | null> {
-    return this.read()
   }
 
   peek(): string | null {

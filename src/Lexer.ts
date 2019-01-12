@@ -22,9 +22,9 @@ export class Lexer {
 
   constructor(protected readonly it: ICharacterIterator) {}
 
-  async read() {
+  read() {
     let c: string | null
-    while ((c = await this.it.next()) !== null) {
+    while ((c = this.it.next()) !== null) {
       this.processToken(c)
     }
     if (this.lastChar !== '\r' && this.lastChar !== '\n') {

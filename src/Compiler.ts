@@ -11,27 +11,24 @@ export class Compiler {
   constructor(protected readonly environment: Environment = new Environment()) {
   }
 
-  async compile(
-    it: ICharacterIterator,
-    args?: string[],
-  ): Promise<IProgram> {
+  compile(it: ICharacterIterator, args?: string[]): IProgram {
     const lexer = new Lexer(it)
-    await lexer.read()
+    lexer.read()
 
-    const entries = [...await this.processPositionals(args), ...lexer.entries]
+    const entries = [...this.processPositionals(args), ...lexer.entries]
 
     const parser = new Parser(this.environment)
     return parser.parse(entries, lexer.targets)
   }
 
-  protected async processPositionals(args?: string[]): Promise<Entry[]> {
+  protected processPositionals(args?: string[]): Entry[] {
     if (!(args && args.length)) {
       return []
     }
     // TODO extract main: into a constant
     const it = new StringIterator('main: ' + args.join(' '))
     const lexer = new Lexer(it)
-    await lexer.read()
+    lexer.read()
     return lexer.entries
   }
 }

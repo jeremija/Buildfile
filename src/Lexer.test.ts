@@ -1,18 +1,17 @@
 import {EntryType} from './EntryType'
 import {Lexer} from './Lexer'
 import {StringIterator} from './StringIterator'
-import {getError} from './TestUtils'
 
 describe('Lexer', () => {
 
-  async function read(str: string) {
+  function read(str: string) {
     const lexer = new Lexer(new StringIterator(str))
-    await lexer.read()
+    lexer.read()
     return lexer
   }
 
   describe('read', () => {
-    it('constructs entries', async () => {
+    it('constructs entries', () => {
       // tslint:disable
       const source = `
 
@@ -38,7 +37,7 @@ test:
 
 `
       // tslint:enable
-      const lexer = await read(source)
+      const lexer = read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.COMMENT, value: '# comment1'},
         {type: EntryType.TARGET, value: 'env'},
@@ -53,14 +52,14 @@ test:
       ])
     })
 
-    it('reads dependency', async () => {
+    it('reads dependency', () => {
       const source = `t1: t2
   echo t1
 
 t2:
   echo t2`
 
-      const lexer = await read(source)
+      const lexer = read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 't1'},
         {type: EntryType.DEPENDENCY, value: 't2'},
@@ -70,11 +69,11 @@ t2:
       ])
     })
 
-    it('reads multiple dependencies', async () => {
+    it('reads multiple dependencies', () => {
       const source = `t1: t2 t3
 t2:`
 
-      const lexer = await read(source)
+      const lexer = read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 't1'},
         {type: EntryType.DEPENDENCY, value: 't2'},
@@ -83,7 +82,7 @@ t2:`
       ])
     })
 
-    it('reads multiple commands w/ dependencies', async () => {
+    it('reads multiple commands w/ dependencies', () => {
       const source = `a: -p b c
 b: d
   echo b
@@ -91,7 +90,7 @@ c:
   echo c
 d:
   echo d`
-      const lexer = await read(source)
+      const lexer = read(source)
       expect(lexer.entries).toEqual([
         {type: EntryType.TARGET, value: 'a'},
         {type: EntryType.PARALLEL_FLAG, value: '-p'},
@@ -107,44 +106,44 @@ d:
       ])
     })
 
-    it('reads CRLF, LF and CR', async () => {
-      let lexer = await read('\n\n')
+    it('reads CRLF, LF and CR', () => {
+      let lexer = read('\n\n')
       expect(lexer.getPosition()).toEqual(0)
       expect(lexer.getLine()).toEqual(3)
 
-      lexer = await read('\r\n')
+      lexer = read('\r\n')
       expect(lexer.getPosition()).toEqual(0)
       expect(lexer.getLine()).toEqual(2)
 
-      lexer = await read('\r')
+      lexer = read('\r')
       expect(lexer.getPosition()).toEqual(0)
       expect(lexer.getLine()).toEqual(2)
     })
 
-    it('fails when commands are wrongly indented', async () => {
-      const error = await getError(read(`command:
+    it('fails when commands are wrongly indented', () => {
+      expect(() => read(`command:
  test`))
-      expect(error.message).toMatch(/2 spaces/)
+      .toThrowError(/2 spaces/)
     })
 
-    it('fails when dependency names contain colons', async () => {
-      const error = await getError(read(`command: command2:`))
-      expect(error.message).toMatch(/cannot contain colons/)
+    it('fails when dependency names contain colons', () => {
+      expect(() => read(`command: command2:`))
+      .toThrowError(/cannot contain colons/)
     })
 
-    it('fails when targets contain spaces', async () => {
-      const error = await getError(read(`com mand:`))
-      expect(error.message).toMatch(/cannot contain spaces/)
+    it('fails when targets contain spaces', () => {
+      expect(() => read(`com mand:`))
+      .toThrowError(/cannot contain spaces/)
     })
 
-    it('fails when colon is forgotten', async () => {
-      const error = await getError(read(`command\n`))
-      expect(error.message).toMatch(/forget a colon/)
+    it('fails when colon is forgotten', () => {
+      expect(() => read(`command\n`))
+      .toThrowError(/forget a colon/)
     })
 
-    it('fails when no target name', async () => {
-      const error = await getError(read(`:\n`))
-      expect(error.message).toMatch(/without a name/)
+    it('fails when no target name', () => {
+      expect(() => read(`:\n`))
+      .toThrowError(/without a name/)
     })
   })
 })

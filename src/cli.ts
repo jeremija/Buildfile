@@ -47,8 +47,8 @@ export async function main(args: string[]) {
     ...parsed.variables,
   })
   const compiler = new Compiler(environment)
-  const fileIterator = new FileIterator(buildfile)
-  const program = await compiler.compile(fileIterator, parsed.positional)
+  const fileIterator = await new FileIterator(buildfile).open()
+  const program = compiler.compile(fileIterator, parsed.positional)
 
   if (parsed.flags.help) {
     out.log('Available targets: ' + program.targetNames.join(', '))

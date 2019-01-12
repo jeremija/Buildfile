@@ -1,4 +1,4 @@
 export interface ICharacterIterator {
-  next(): Promise<string | null> | string | null
+  next(): string | null
   peek(): string | null
 }
