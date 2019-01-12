@@ -2,6 +2,7 @@ import {Compiler} from './Compiler'
 import {Runner} from './Runner'
 import {StringIterator} from './StringIterator'
 import {Target} from './Target'
+import {environment} from './TestUtils'
 
 describe('Runner', () => {
 
@@ -17,7 +18,7 @@ b:
   })
 
   it('runs everything in parallel', async () => {
-    await new Runner().run(targets)
+    await new Runner(environment).run(targets)
   })
 
 })

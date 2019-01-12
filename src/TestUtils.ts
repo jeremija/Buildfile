@@ -1,3 +1,4 @@
+import {Environment} from './Environment'
 import {Writable} from 'stream'
 
 export async function getError(promise: Promise<any>): Promise<Error> {
@@ -23,3 +24,5 @@ export class MemoryWritableStream extends Writable {
     return this.data
   }
 }
+
+export const environment = new Environment()

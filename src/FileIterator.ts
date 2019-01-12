@@ -9,6 +9,7 @@ export class FileIterator implements ICharacterIterator {
   protected isReadableReject!: (err: Error) => void
 
   protected readable: NodeJS.ReadableStream | undefined
+  protected readonly buffer: Array<string | null> = [null, null]
 
   constructor(public readonly filename: string) {
     this.isReadable = new Promise((resolve, reject) => {
@@ -30,15 +31,26 @@ export class FileIterator implements ICharacterIterator {
       this.isReadableResolve()
     })
     await this.readable
+    await this.read()
   }
 
-  async next(): Promise<string | null> {
+  protected async read() {
     if (!this.readable) {
       await this.startReading()
     }
-    assert.ok(this.readable, 'Cannot get a character when there is no stream')
     await this.isReadable
-    return this.readable!.read(1) as string | null
+    assert.ok(this.readable, 'Cannot get a character when there is no stream')
+    this.buffer[0] = this.buffer[1]
+    this.buffer[1] = this.readable!.read(1) as string | null
+    return this.buffer[0]
+  }
+
+  async next(): Promise<string | null> {
+    return this.read()
+  }
+
+  peek(): string | null {
+    return this.buffer[1]
   }
 
 }

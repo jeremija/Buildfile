@@ -129,7 +129,7 @@ echo:
 ```bash
 $ args=test build
 ==> build
-> echo $args
+> echo test
 test
 ```
 
@@ -143,6 +143,7 @@ test
  - [x] Add support command line continuation via `\`
  - [x] Add support for different types of child_process stdio attachments
  - [x] Add support for comments beginning with `#`
+ - [x] Add ability to replace environment variables
  - [ ] Add ability to specify subprocess environment variables at the end
 
 Have an idea? Let me know!

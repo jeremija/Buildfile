@@ -1,8 +1,9 @@
 import assert from 'assert'
-import {Command} from './Command'
+import {CommandFactory} from './CommandFactory'
 import {DebugLogger} from './DebugLogger'
 import {EntryType} from './EntryType'
 import {Entry} from './Entry'
+import {Environment} from './Environment'
 import {IProgram} from './IProgram'
 import {Program} from './Program'
 import {Target} from './Target'
@@ -19,6 +20,11 @@ interface IContext {
 
 export class Parser {
   public readonly program = new Program()
+  protected readonly commandFactory: CommandFactory
+
+  constructor(protected readonly environment: Environment) {
+    this.commandFactory = new CommandFactory(environment)
+  }
 
   parse(entries: Entry[], targets: string[]): IProgram {
     const ctx: IContext = {
@@ -55,7 +61,7 @@ export class Parser {
           ctx.isParallel = true
           break
         case (EntryType.COMMAND):
-          const command = new Command(entry.value)
+          const command = this.commandFactory.createFrom(entry)
           assert.ok(target, 'A command must have a parent target: ' + command)
           logger.log('addCommand: %s', command.value)
           target.addCommand(command)

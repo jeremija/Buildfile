@@ -1,4 +1,5 @@
 import {out} from './config'
+import {Environment} from './Environment'
 import {spawn} from 'child_process'
 
 export enum StdioOptions {
@@ -11,6 +12,7 @@ export class Subprocess {
 
   constructor(
     public readonly command: string,
+    public readonly environment: Environment,
     public readonly stdio: StdioOptions = StdioOptions.PIPE,
   ) {}
 
@@ -20,6 +22,7 @@ export class Subprocess {
       const subprocess = spawn(this.command, [], {
         shell: true,
         stdio: this.stdio,
+        env: this.environment.variables,
       })
 
       if (this.stdio === StdioOptions.PIPE) {

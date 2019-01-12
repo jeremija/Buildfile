@@ -3,9 +3,9 @@ import {ArgumentParser} from './ArgumentParser'
 import {Bootstrap} from './Bootstrap'
 import {Compiler} from './Compiler'
 import {DebugLogger} from './DebugLogger'
+import {Environment} from './Environment'
 import {FileIterator} from './FileIterator'
 import {ProgramExecutor} from './ProgramExecutor'
-import {addNodeModulesToPath} from './addNodeModulesToPath'
 import {out} from './config'
 
 export const bootstrap = new Bootstrap()
@@ -42,8 +42,9 @@ export async function main(args: string[]) {
   bootstrap.debug = !!parsed.flags.debug
 
   const buildfile = parsed.flags.file as string
+  const environment = new Environment()
+  const compiler = new Compiler(environment)
   const fileIterator = new FileIterator(buildfile)
-  const compiler = new Compiler()
   const program = await compiler.compile(fileIterator, parsed.positional)
 
   if (parsed.flags.help) {
@@ -51,9 +52,7 @@ export async function main(args: string[]) {
     return
   }
 
-  addNodeModulesToPath()
-
-  const executor = new ProgramExecutor()
+  const executor = new ProgramExecutor(environment)
   await executor.execute(program)
 }
 

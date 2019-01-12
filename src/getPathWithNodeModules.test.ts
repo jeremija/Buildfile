@@ -5,8 +5,7 @@ import {
   findNodeModulesBin,
   getPathSeparator,
   addPathVariable,
-  addNodeModulesToPath,
-} from './addNodeModulesToPath'
+} from './getPathWithNodeModules'
 
 describe('findNodeModulesBin', () => {
 
@@ -60,19 +59,6 @@ describe('addPathVariable', () => {
     const path = process.env.PATH!
     const separator = getPathSeparator(platform())
     expect(addPathVariable(path, '/test')).toEqual(`/test${separator}${path}`)
-  })
-
-})
-
-describe('addNodeModulesToPath', () => {
-
-  let path!: string
-  beforeEach(() => path = process.env.PATH!)
-  afterEach(() => process.env.PATH = path)
-
-  it('modifies path variable when node_modules/.bin found', () => {
-    addNodeModulesToPath()
-    expect(process.env.PATH).not.toEqual(path)
   })
 
 })

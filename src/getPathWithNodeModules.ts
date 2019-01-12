@@ -16,11 +16,8 @@ export function addPathVariable(
   return `${pathToAdd}${separator}${process.env.PATH}`
 }
 
-export function addNodeModulesToPath() {
-  process.env.PATH = addPathVariable(
-    process.env.PATH!,
-    findNodeModulesBin(),
-  )
+export function getPathWithNodeModules() {
+  return addPathVariable(process.env.PATH!, findNodeModulesBin())
 }
 
 export function findNodeModulesBin(dir = process.cwd()): string | undefined {

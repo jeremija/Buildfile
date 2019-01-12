@@ -8,11 +8,15 @@ describe('FileIterator', () => {
   it('reads through the whole stream', async () => {
     const i = new FileIterator(filename)
     let buffer = ''
+    let peekBuffer = ''
     let c: string | null
     while ((c = await i.next()) !== null) {
       buffer += c
+      peekBuffer += i.peek()
     }
-    expect(buffer).toEqual(readFileSync(filename, 'utf8'))
+    const expected = readFileSync(filename, 'utf8')
+    expect(buffer).toEqual(expected)
+    expect(peekBuffer).toEqual(expected.substring(1) + 'null')
   })
 
   it('rejects on error', async () => {

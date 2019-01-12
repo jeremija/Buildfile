@@ -1,10 +1,13 @@
 import assert from 'assert'
+import {Environment} from './Environment'
 import {IProgram} from './IProgram'
 import {Runner} from './Runner'
 import {Target} from './Target'
 import {out} from './config'
 
 export class ProgramExecutor {
+
+  constructor(protected readonly environment: Environment) {}
 
   async execute(program: IProgram) {
     await this.executeTargets(program, [program.mainTarget])
@@ -23,7 +26,7 @@ export class ProgramExecutor {
 
     await this.executeDependencies(program, selectedTargets)
 
-    const runner = new Runner()
+    const runner = new Runner(this.environment)
     await runner.run(selectedTargets)
   }
 

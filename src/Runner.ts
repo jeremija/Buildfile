@@ -1,8 +1,12 @@
 import {Command} from './Command'
-import {Target} from './Target'
+import {Environment} from './Environment'
 import {StdioOptions, Subprocess} from './Subprocess'
+import {Target} from './Target'
 
 export class Runner {
+
+  constructor(public readonly environment: Environment) {
+  }
 
   async run(targets: Target[]): Promise<void> {
     const isSingle = targets.length === 1
@@ -19,7 +23,7 @@ export class Runner {
 
   private async runCommand(command: Command, isSingle: boolean) {
     const options = isSingle ? StdioOptions.INHERIT : StdioOptions.PIPE
-    return await new Subprocess(command.value, options).run()
+    return await new Subprocess(command.value, this.environment, options).run()
   }
 
 }

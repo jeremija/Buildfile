@@ -1,13 +1,14 @@
 import {Compiler} from './Compiler'
 import {ProgramExecutor} from './ProgramExecutor'
 import {StringIterator} from './StringIterator'
+import {environment} from './TestUtils'
 
 describe('ProgramExecutor', () => {
 
   async function run(src: string, targets: string[]) {
     const compiler = new Compiler()
     const program = await compiler.compile(new StringIterator(src), targets)
-    const executor = new ProgramExecutor()
+    const executor = new ProgramExecutor(environment)
     await executor.execute(program)
   }
 
