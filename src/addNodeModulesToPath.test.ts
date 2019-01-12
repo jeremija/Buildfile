@@ -1,5 +1,6 @@
-import * as os from 'os'
-import {join} from 'path'
+import {join, normalize} from 'path'
+import {mkdirSync, writeFileSync} from 'fs'
+import {platform} from 'os'
 import {
   findNodeModulesBin,
   getPathSeparator,
@@ -9,18 +10,32 @@ import {
 
 describe('findNodeModulesBin', () => {
 
+  beforeAll(() => {
+    // node_modules get removed after "npm ci" is run, so this one needs to be
+    // recreated, since it is only used for testing.
+    const testPath = getPath('..', 'test-files', 'node_modules')
+    try {
+      mkdirSync(testPath)
+    } catch (err) {
+      // ok if dir already exists
+    }
+    writeFileSync(join(testPath, '.bin'), '')
+  })
+
+  const getPath = (...p: string[]) => normalize(join(__dirname, ...p))
+
   it('returns the closest node_modules/.bin folder to cwd', () => {
     let value = findNodeModulesBin(process.cwd())
-    expect(value).toEqual(join(process.cwd(), 'node_modules', '.bin'))
+    expect(value).toEqual(getPath('..', 'node_modules', '.bin'))
 
     value = findNodeModulesBin(join(process.cwd(), 'test', 'bla'))
-    expect(value).toEqual(join(process.cwd(), 'node_modules', '.bin'))
+    expect(value).toEqual(getPath('..', 'node_modules', '.bin'))
 
     value = findNodeModulesBin(join('/non-existing/dir/bla/123/test'))
     expect(value).toEqual(undefined)
 
-    value = findNodeModulesBin(join(__dirname, '../test-files/bla'))
-    expect(value).toEqual(join(process.cwd(), 'node_modules', '.bin'))
+    value = findNodeModulesBin(getPath('..', 'test-files', 'bla'))
+    expect(value).toEqual(getPath('..', 'node_modules', '.bin'))
   })
 
 })
@@ -43,7 +58,7 @@ describe('addPathVariable', () => {
   })
   it('adds a to path', () => {
     const path = process.env.PATH!
-    const separator = getPathSeparator(os.platform())
+    const separator = getPathSeparator(platform())
     expect(addPathVariable(path, '/test')).toEqual(`/test${separator}${path}`)
   })
 

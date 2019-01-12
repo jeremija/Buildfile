@@ -1,5 +1,5 @@
 import {platform} from 'os'
-import {dirname, join} from 'path'
+import {dirname, join, normalize} from 'path'
 import {statSync} from 'fs'
 
 export function getPathSeparator(platformValue: string) {
@@ -28,7 +28,7 @@ export function findNodeModulesBin(dir = process.cwd()): string | undefined {
     const candidate = join(dir, 'node_modules', '.bin')
     const result = statSync(candidate)
     if (result.isDirectory()) {
-      return candidate
+      return normalize(candidate)
     }
   } catch (err) {
     // statSync will throw an error if a directory does not exist
