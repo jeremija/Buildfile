@@ -106,9 +106,11 @@ dependency:
 running `build` should run the first available target: `target`:
 
 ```
-==> echo dependency
-dependency
-==> echo target
+==> target
+==> dependency
+> echo dependency
+ dependency
+> echo target
 target
 ```
 
@@ -125,7 +127,8 @@ echo:
 
 ```bash
 $ args=test build
-==> args=test build
+==> build
+> echo $args
 test
 ```
 

@@ -20,6 +20,10 @@ coverage:
 install:
   npm install
 
+clean:
+  rm -f jest.setup.js
+  rm -f src/*.js
+
 example:
   ls
   ls -l

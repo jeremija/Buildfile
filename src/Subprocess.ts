@@ -16,7 +16,7 @@ export class Subprocess {
 
   async run() {
     return new Promise((resolve, reject) => {
-      out.log('==> %s\n', this.command)
+      out.log('> %s', this.command)
       const subprocess = spawn(this.command, [], {
         shell: true,
         stdio: this.stdio,

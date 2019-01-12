@@ -2,9 +2,7 @@ import assert from 'assert'
 import {IProgram} from './IProgram'
 import {Runner} from './Runner'
 import {Target} from './Target'
-import {DebugLogger} from './DebugLogger'
-
-const logger = new DebugLogger('programexecutor')
+import {out} from './config'
 
 export class ProgramExecutor {
 
@@ -13,7 +11,7 @@ export class ProgramExecutor {
   }
 
   protected async executeTargets(program: IProgram, targets: string[]) {
-    logger.log('executeTargets: %s', targets)
+    out.log('==> %s', targets)
 
     const selectedTargets = targets.map(t => {
       assert.ok(
