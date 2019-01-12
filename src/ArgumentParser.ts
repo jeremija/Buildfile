@@ -13,6 +13,10 @@ export interface IFlags {
   [name: string]: Value
 }
 
+export interface IVariables {
+  [name: string]: string
+}
+
 interface IArgumentMap {
   [key: string]: IArgument
 }
@@ -20,13 +24,15 @@ interface IArgumentMap {
 export interface IResult {
   flags: IFlags
   positional: string[]
+  variables: IVariables
 }
 
 export interface IContext extends IResult {
-  requiredArgs: IArgumentMap,
-  defaultArgs: IArgumentMap,
-  onlyPositionals: boolean,
-  pending: IArgument | undefined,
+  requiredArgs: IArgumentMap
+  defaultArgs: IArgumentMap
+  variables: IVariables
+  onlyPositionals: boolean
+  pending: IArgument | undefined
 }
 
 export class ArgumentParser {
@@ -97,6 +103,7 @@ export class ArgumentParser {
     return {
       flags: {},
       positional: [],
+      variables: {},
       requiredArgs,
       defaultArgs,
       onlyPositionals: false,
@@ -104,12 +111,26 @@ export class ArgumentParser {
     }
   }
 
-  protected addValue(ctx: IContext, value: string) {
+  protected split(value: string): [string, string] {
+    const [key, val] = value.split(/=(.+)/)
+    return [key, val]
+  }
+
+  protected addVariable(ctx: IContext, value: string): boolean {
+    if (value.indexOf('=') === -1) {
+      return false
+    }
+    const [key, val] = this.split(value)
+    ctx.variables[key] = val
+    return true
+  }
+
+  protected addValue(ctx: IContext, value: string): boolean {
     const hasEquals = value.indexOf('=') >= 0
     let rightOfEquals = ''
 
     if (hasEquals) {
-      [value, rightOfEquals] = value.split(/=(.+)/)
+      [value, rightOfEquals] = this.split(value)
     }
 
     if (!this.args.hasOwnProperty(value)) {
@@ -193,6 +214,10 @@ export class ArgumentParser {
       }
 
       if (this.addValue(ctx, value)) {
+        continue
+      }
+
+      if (this.addVariable(ctx, value)) {
         continue
       }
 

@@ -42,7 +42,10 @@ export async function main(args: string[]) {
   bootstrap.debug = !!parsed.flags.debug
 
   const buildfile = parsed.flags.file as string
-  const environment = new Environment()
+  const environment = new Environment({
+    ...process.env,
+    ...parsed.variables,
+  })
   const compiler = new Compiler(environment)
   const fileIterator = new FileIterator(buildfile)
   const program = await compiler.compile(fileIterator, parsed.positional)

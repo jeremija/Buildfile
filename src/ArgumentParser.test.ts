@@ -112,6 +112,14 @@ describe('ArgumentParser', () => {
     expect(() => p.parse(['-p'])).toThrowError(/-p\/--person requires a value/)
   })
 
+  it('sets variables', () => {
+    const p = new ArgumentParser([])
+    expect(p.parse(['a=1', 'b=2']).variables).toEqual({
+      a: '1',
+      b: '2',
+    })
+  })
+
   describe('help', () => {
 
     it('prints help', () => {

@@ -127,10 +127,22 @@ echo:
 ```
 
 ```bash
-$ args=test build
+$ build args=test
 ==> build
 > echo test
 test
+```
+
+The following also works:
+
+```
+test:
+  echo $var
+  echo ${var1}
+  echo ${var1:defaultValue}
+  echo ${var1}
+  echo ${var1:${fallback}}
+  echo ${var1:$var2$var3}
 ```
 
 # TODO
@@ -144,7 +156,7 @@ test
  - [x] Add support for different types of child_process stdio attachments
  - [x] Add support for comments beginning with `#`
  - [x] Add ability to replace environment variables
- - [ ] Add ability to specify subprocess environment variables at the end
+ - [x] Add ability to specify subprocess environment variables at the end
 
 Have an idea? Let me know!
 
