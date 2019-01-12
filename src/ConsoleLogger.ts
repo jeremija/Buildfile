@@ -7,18 +7,24 @@ export class ConsoleLogger implements ILogger {
     public readonly stderr: NodeJS.WritableStream = process.stderr,
   ) {}
 
-  log(message?: any, ...optionalParams: any[]) {
+  protected write(
+    stream: NodeJS.WritableStream,
+    message: any,
+    optionalParams: any[],
+  ) {
     if (Buffer.isBuffer(message)) {
-      this.stdout.write(message)
+      stream.write(message)
       return
     }
-    this.stdout.write(format(message, ...optionalParams))
+    stream.write(format(message, ...optionalParams))
+    stream.write('\n')
   }
+
+  log(message?: any, ...optionalParams: any[]) {
+    this.write(this.stdout, message, optionalParams)
+  }
+
   error(message?: any, ...optionalParams: any[]) {
-    if (Buffer.isBuffer(message)) {
-      this.stderr.write(message)
-      return
-    }
-    this.stderr.write(format(message, ...optionalParams))
+    this.write(this.stderr, message, optionalParams)
   }
 }

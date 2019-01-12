@@ -12,7 +12,7 @@ module.exports = {
     'js',
     'jsx'
   ],
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFiles: ['<rootDir>/jest.setup.ts'],
   coverageThreshold: {
     global: {
       branches: 100,

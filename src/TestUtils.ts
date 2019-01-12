@@ -16,6 +16,7 @@ export class MemoryWritableStream extends Writable {
 
   _write(chunk: any, encoding: string, done: (error?: Error | null) => void) {
     this.data += chunk
+    done()
   }
 
   getData() {

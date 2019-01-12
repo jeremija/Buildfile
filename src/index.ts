@@ -6,6 +6,7 @@ import {DebugLogger} from './DebugLogger'
 import {FileIterator} from './FileIterator'
 import {ProgramExecutor} from './ProgramExecutor'
 import {addNodeModulesToPath} from './addNodeModulesToPath'
+import {out} from './config'
 
 const bootstrap = new Bootstrap()
 
@@ -32,9 +33,9 @@ export const argumentParser = new ArgumentParser([{
 export async function main(args: string[]) {
   const parsed = argumentParser.parse(args)
   if (parsed.flags.help) {
-    console.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
-    console.log(argumentParser.help())
-    console.log('  -p, --parallel        Run targets in parallel\n')
+    out.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
+    out.log(argumentParser.help())
+    out.log('  -p, --parallel        Run targets in parallel\n')
   }
 
   DebugLogger.enableAll(!!parsed.flags.debug)
@@ -46,7 +47,7 @@ export async function main(args: string[]) {
   const program = await compiler.compile(fileIterator, parsed.positional)
 
   if (parsed.flags.help) {
-    console.log('Available targets: ' + program.targetNames.join(', '))
+    out.log('Available targets: ' + program.targetNames.join(', '))
     return
   }
 

@@ -22,7 +22,7 @@ describe('ConsoleLogger', () => {
   describe('log', () => {
     it('logs messages to stdout stream', () => {
       create().log('Hi %s %s!', 'John', 'Cusack')
-      expect(stdout.getData()).toEqual('Hi John Cusack!')
+      expect(stdout.getData()).toEqual('Hi John Cusack!\n')
     })
 
     it('handles Buffers', () => {
@@ -35,7 +35,7 @@ describe('ConsoleLogger', () => {
   describe('error', () => {
     it('logs messages to stdout stream', () => {
       create().error('Hi %s %s!', 'John', 'Cusack')
-      expect(stderr.getData()).toEqual('Hi John Cusack!')
+      expect(stderr.getData()).toEqual('Hi John Cusack!\n')
     })
     it('handles Buffers', () => {
       const b = Buffer.from('test string')

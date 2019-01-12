@@ -23,7 +23,6 @@
         "member-ordering": false,
         "max-classes-per-file": false,
         "no-empty-interface": false,
-        "no-console": false,
         "no-conditional-assignment": false
     },
     "rulesDirectory": []

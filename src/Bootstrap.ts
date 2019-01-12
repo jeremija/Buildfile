@@ -1,3 +1,5 @@
+import {out} from './config'
+
 export class Bootstrap {
 
   public debug = false
@@ -14,7 +16,7 @@ export class Bootstrap {
     fn(this.args.slice(2))
     .then(() => this.exit(0))
     .catch(err => {
-      console.error('Error: %s', this.debug ? err.stack : err.message)
+      out.error('Error: %s', this.debug ? err.stack : err.message)
       this.exit(1)
     })
   }

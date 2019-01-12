@@ -1,13 +1,11 @@
+import {out} from './config'
 import {spawn} from 'child_process'
-import {ConsoleLogger} from './ConsoleLogger'
 
 export enum StdioOptions {
   PIPE = 'pipe',
   INHERIT = 'inherit',
   IGNORE = 'ignore',
 }
-
-const logger = new ConsoleLogger()
 
 export class Subprocess {
 
@@ -18,15 +16,15 @@ export class Subprocess {
 
   async run() {
     return new Promise((resolve, reject) => {
-      console.log('==>', this.command)
+      out.log('==> %s\n', this.command)
       const subprocess = spawn(this.command, [], {
         shell: true,
         stdio: this.stdio,
       })
 
       if (this.stdio === StdioOptions.PIPE) {
-        subprocess.stdout.on('data', data => logger.log(data))
-        subprocess.stderr.on('data', data => logger.error(data))
+        subprocess.stdout.on('data', data => out.log(data))
+        subprocess.stderr.on('data', data => out.error(data))
       }
 
       subprocess.on('close', code => {
