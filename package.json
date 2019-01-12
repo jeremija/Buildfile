@@ -18,9 +18,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "find src/ -name '*.js' | xargs rm",
+    "clean": "rm -f jest.setup.js src/*.js",
     "test": "jest",
-    "prepublish": "npm run build"
+    "prepublish": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
