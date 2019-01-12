@@ -56,12 +56,12 @@ export class DebugLogger implements ILogger {
     DebugLogger.loggers[name] = this
   }
 
-  log(msg: string, ...params: any[]) {
-    this.logger.log(msg + '\n', ...params)
+  log(msg: any, ...params: any[]) {
+    this.logger.log(msg, ...params)
   }
 
-  error(msg: string, ...params: any[]) {
-    this.logger.error(msg + '\n', ...params)
+  error(msg: any, ...params: any[]) {
+    this.logger.error(msg, ...params)
   }
 
   enable() {
