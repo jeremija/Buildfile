@@ -49,5 +49,6 @@
   "bugs": {
     "url": "https://github.com/jeremija/buildfile/issues"
   },
-  "homepage": "https://github.com/jeremija/buildfile#readme"
+  "homepage": "https://github.com/jeremija/buildfile#readme",
+  "dependencies": {}
 }
