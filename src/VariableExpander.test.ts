@@ -19,8 +19,8 @@ describe('VariableExpander', () => {
 
   describe('constructor', () => {
     it('should use ( and ) as default brackets', () => {
-      expect(cf.bracketOpen).toEqual('(')
-      expect(cf.bracketClose).toEqual(')')
+      expect(cf.bracketOpen).toEqual('{')
+      expect(cf.bracketClose).toEqual('}')
     })
 
     it('should accept custom bracket open/close signs', () => {
@@ -52,38 +52,38 @@ describe('VariableExpander', () => {
     })
 
     it('should work with curly brace definitions', () => {
-      expect(expand('$(one)')).toEqual('numero uno')
-      expect(expand('$( one)')).toEqual('numero uno')
-      expect(expand('$(   one   )')).toEqual('numero uno')
+      expect(expand('${one}')).toEqual('numero uno')
+      expect(expand('${ one}')).toEqual('numero uno')
+      expect(expand('${   one   }')).toEqual('numero uno')
     })
 
     it('should replace with default value when value not set', () => {
-      expect(expand('$(three:four)')).toEqual('four')
-      expect(expand('$(three:$two)')).toEqual('num2')
-      expect(expand('$(three:a$two)')).toEqual('anum2')
-      expect(expand('$(three:$(two))')).toEqual('num2')
-      expect(expand('$(three:a$(two)b)')).toEqual('anum2b')
+      expect(expand('${three:four}')).toEqual('four')
+      expect(expand('${three:$two}')).toEqual('num2')
+      expect(expand('${three:a$two}')).toEqual('anum2')
+      expect(expand('${three:${two}}')).toEqual('num2')
+      expect(expand('${three:a${two}b}')).toEqual('anum2b')
     })
 
     it('should replace with default values when value not set', () => {
-      expect(expand('$(three:$one$two)')).toEqual('numero unonum2')
-      expect(expand('$(three:$one$two )')).toEqual('numero unonum2')
-      expect(expand('$(three:$(one)$(two))')).toEqual('numero unonum2')
+      expect(expand('${three:$one$two}')).toEqual('numero unonum2')
+      expect(expand('${three:$one$two }')).toEqual('numero unonum2')
+      expect(expand('${three:${one}${two}}')).toEqual('numero unonum2')
     })
 
     it('should support multiple levels of nested variables', () => {
-      expect(expand('$(four:$(three:$(two)))')).toEqual('num2')
-      expect(expand('$(four: $(three:$(two)))')).toEqual(' num2')
+      expect(expand('${four:${three:${two}}}')).toEqual('num2')
+      expect(expand('${four: ${three:${two}}}')).toEqual(' num2')
     })
 
     it('should support escape character "$$" for default value', () => {
-      expect(expand('$(four:$$test)')).toEqual('$test')
-      expect(expand('$($$four:$$test)')).toEqual('$test')
-      expect(expand('$($$four:$$test)')).toEqual('$test')
+      expect(expand('${four:$$test}')).toEqual('$test')
+      expect(expand('${$$four:$$test}')).toEqual('$test')
+      expect(expand('${$$four:$$test}')).toEqual('$test')
     })
 
     it('should exit on newline', () => {
-      expect(expand('$(four:$$test)\n')).toEqual('$test')
+      expect(expand('${four:$$test}\n')).toEqual('$test')
     })
 
     it('should keep ${} when $${}', () => {

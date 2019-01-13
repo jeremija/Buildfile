@@ -23,8 +23,8 @@ const STOP_CHARS = new Set([null, '\n'])
 export class VariableExpander {
   constructor(
     protected readonly environment: Environment,
-    readonly bracketOpen = '(',
-    readonly bracketClose = ')',
+    readonly bracketOpen = '{',
+    readonly bracketClose = '}',
   ) {}
 
   expand(it: ICharacterIterator) {

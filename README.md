@@ -143,11 +143,11 @@ test:
   echo $myvar1
   echo $myvar2
   echo $var1
-  echo $(var4)
-  echo $(var1:defaultValue)
-  echo $(var1)
-  echo $(var1:$(fallback))
-  echo $(var1:$var2$var3)
+  echo ${var4}
+  echo ${var1:defaultValue}
+  echo ${var1}
+  echo ${var1:${fallback}}
+  echo ${var1:$var2$var3}
 ```
 
 If a variable needs to be passed without expansion, it can be escaped with
@@ -170,6 +170,7 @@ If a variable needs to be passed without expansion, it can be escaped with
  - [x] Add ability to replace environment variables
  - [x] Add ability to specify subprocess environment variables at the end
  - [x] Add ability to define env variables from within a `Buildfile`
+ - [ ] Make error message during variable substitution more helpful
 
 Have an idea? Let me know!
 
