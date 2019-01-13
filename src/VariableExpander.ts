@@ -1,6 +1,5 @@
 import assert from 'assert'
 import {Environment} from './Environment'
-// import {StringIterator} from './StringIterator'
 import {ICharacterIterator} from './ICharacterIterator'
 
 interface IContext {
@@ -12,7 +11,7 @@ interface IContext {
 
 interface IVariable {
   colon: boolean
-  curlyBraceOpen: boolean
+  bracketOpen: boolean
   defaultValue: string
   name: string
   value: string
@@ -22,7 +21,11 @@ interface IVariable {
 const STOP_CHARS = new Set([null, '\n'])
 
 export class VariableExpander {
-  constructor(protected readonly environment: Environment) {}
+  constructor(
+    protected readonly environment: Environment,
+    protected readonly bracketOpen = '(',
+    protected readonly bracketClose = ')',
+  ) {}
 
   expand(it: ICharacterIterator) {
     const ctx: IContext = {
@@ -57,7 +60,7 @@ export class VariableExpander {
   protected createVariable(parent?: IVariable): IVariable {
     return {
       colon: false,
-      curlyBraceOpen: false,
+      bracketOpen: false,
       defaultValue: '',
       name: '',
       value: '',
@@ -71,7 +74,7 @@ export class VariableExpander {
 
     const finish = (v: IVariable) => {
       assert.ok(v && v.name)
-      assert.ok(!v.curlyBraceOpen)
+      assert.ok(!v.bracketOpen)
       v.value = this.environment.get(v.name, v.defaultValue)
       if (v.parent) {
         v.parent.defaultValue += v.value
@@ -84,7 +87,7 @@ export class VariableExpander {
 
       switch (ctx.char) {
         case ' ':
-          if (variable.curlyBraceOpen) {
+          if (variable.bracketOpen) {
             if (variable.colon && ctx.char !== null) {
               // handle space in ${var1: $var2}
               variable.defaultValue += ctx.char
@@ -98,21 +101,21 @@ export class VariableExpander {
           finish(variable)
           variable = variable.parent
           break
-        case '{':
+        case this.bracketOpen:
           assert.ok(ctx.lastChar === '$')
-          variable.curlyBraceOpen = true
+          variable.bracketOpen = true
           break
-        case '}':
-          if (variable.curlyBraceOpen) {
-            variable.curlyBraceOpen = false
+        case this.bracketClose:
+          if (variable.bracketOpen) {
+            variable.bracketOpen = false
             finish(variable)
             variable = variable.parent
             break
           }
           // this is a close curly brace of the parent variable
-          // assert.ok(!variable.curlyBraceOpen)
-          assert.ok(variable.parent && variable.parent.curlyBraceOpen)
-          variable.parent!.curlyBraceOpen = false
+          // assert.ok(!variable.bracketOpen)
+          assert.ok(variable.parent && variable.parent.bracketOpen)
+          variable.parent!.bracketOpen = false
           finish(variable)
           finish(variable.parent!)
           variable = variable.parent!.parent
@@ -134,7 +137,7 @@ export class VariableExpander {
           }
 
           assert.ok(variable.name)
-          if (variable.curlyBraceOpen && variable.colon) {
+          if (variable.bracketOpen && variable.colon) {
             variable = this.createVariable(variable)
             break
           }
@@ -146,13 +149,13 @@ export class VariableExpander {
         default:
           if (variable.colon) {
             assert.ok(variable.name)
-            assert.ok(variable.curlyBraceOpen)
+            assert.ok(variable.bracketOpen)
             variable.defaultValue += ctx.char
             break
           }
           variable.name += ctx.char
           const peek = ctx.it.peek()
-          if (!variable.parent && !variable.curlyBraceOpen &&
+          if (!variable.parent && !variable.bracketOpen &&
             (peek === ' ' || peek === '$')
           ) {
             // support "$var1 $var2" and $var1$var2

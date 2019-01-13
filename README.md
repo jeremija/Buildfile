@@ -143,11 +143,11 @@ test:
   echo $myvar1
   echo $myvar2
   echo $var1
-  echo ${var4}
-  echo ${var1:defaultValue}
-  echo ${var1}
-  echo ${var1:${fallback}}
-  echo ${var1:$var2$var3}
+  echo $(var4)
+  echo $(var1:defaultValue)
+  echo $(var1)
+  echo $(var1:$(fallback))
+  echo $(var1:$var2$var3)
 ```
 
 # TODO

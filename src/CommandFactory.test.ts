@@ -41,33 +41,33 @@ describe('CommandFactory', () => {
     })
 
     it('should work with curly brace definitions', () => {
-      expect(create('${one}').value).toEqual('numero uno')
-      expect(create('${ one}').value).toEqual('numero uno')
-      expect(create('${   one   }').value).toEqual('numero uno')
+      expect(create('$(one)').value).toEqual('numero uno')
+      expect(create('$( one)').value).toEqual('numero uno')
+      expect(create('$(   one   )').value).toEqual('numero uno')
     })
 
     it('should replace with default value when value not set', () => {
-      expect(create('${three:four}').value).toEqual('four')
-      expect(create('${three:$two}').value).toEqual('num2')
-      expect(create('${three:a$two}').value).toEqual('anum2')
-      expect(create('${three:${two}}').value).toEqual('num2')
-      expect(create('${three:a${two}b}').value).toEqual('anum2b')
+      expect(create('$(three:four)').value).toEqual('four')
+      expect(create('$(three:$two)').value).toEqual('num2')
+      expect(create('$(three:a$two)').value).toEqual('anum2')
+      expect(create('$(three:$(two))').value).toEqual('num2')
+      expect(create('$(three:a$(two)b)').value).toEqual('anum2b')
     })
 
     it('should replace with default values when value not set', () => {
-      expect(create('${three:$one$two}').value).toEqual('numero unonum2')
-      expect(create('${three:${one}${two}}').value).toEqual('numero unonum2')
+      expect(create('$(three:$one$two)').value).toEqual('numero unonum2')
+      expect(create('$(three:$(one)$(two))').value).toEqual('numero unonum2')
     })
 
     it('should support multiple levels of nested variables', () => {
-      expect(create('${four:${three:${two}}}').value).toEqual('num2')
-      expect(create('${four: ${three:${two}}}').value).toEqual(' num2')
+      expect(create('$(four:$(three:$(two)))').value).toEqual('num2')
+      expect(create('$(four: $(three:$(two)))').value).toEqual(' num2')
     })
 
     it('should support escape character "\\" for default value', () => {
-      expect(create('${four:\\$test}').value).toEqual('$test')
-      expect(create('${\\$four:\\$test}').value).toEqual('$test')
-      expect(create('${\\$four:\\$test}').value).toEqual('$test')
+      expect(create('$(four:\\$test)').value).toEqual('$test')
+      expect(create('$(\\$four:\\$test)').value).toEqual('$test')
+      expect(create('$(\\$four:\\$test)').value).toEqual('$test')
     })
   })
 
