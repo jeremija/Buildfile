@@ -150,6 +150,13 @@ test:
   echo $(var1:$var2$var3)
 ```
 
+If a variable needs to be passed without expansion, it can be escaped with
+`$$`:
+
+ - `$$var`
+ - `$${var}`
+
+
 # TODO
 
  - [x] Implement basic syntax parsing

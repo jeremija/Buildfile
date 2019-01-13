@@ -17,10 +17,24 @@ describe('VariableExpander', () => {
     return cf.expand(it)
   }
 
+  describe('constructor', () => {
+    it('should use ( and ) as default brackets', () => {
+      expect(cf.bracketOpen).toEqual('(')
+      expect(cf.bracketClose).toEqual(')')
+    })
+
+    it('should accept custom bracket open/close signs', () => {
+      cf = new VariableExpander(new Environment(), '[', ']')
+      expect(cf.bracketOpen).toEqual('[')
+      expect(cf.bracketClose).toEqual(']')
+    })
+  })
+
   describe('expandFrom', () => {
-    it('should do nothing when no $, or when $ sign is escaped by \\', () => {
+    it('should do nothing when no $, or when $ sign is escaped by $$', () => {
       expect(expand('test a b c')).toEqual('test a b c')
-      expect(expand('\\$test')).toEqual('$test')
+      expect(expand('$$test')).toEqual('$test')
+      expect(expand('$$a$$b')).toEqual('$a$b')
     })
 
     it('should replace a single variable', () => {
@@ -62,14 +76,18 @@ describe('VariableExpander', () => {
       expect(expand('$(four: $(three:$(two)))')).toEqual(' num2')
     })
 
-    it('should support escape character "\\" for default value', () => {
-      expect(expand('$(four:\\$test)')).toEqual('$test')
-      expect(expand('$(\\$four:\\$test)')).toEqual('$test')
-      expect(expand('$(\\$four:\\$test)')).toEqual('$test')
+    it('should support escape character "$$" for default value', () => {
+      expect(expand('$(four:$$test)')).toEqual('$test')
+      expect(expand('$($$four:$$test)')).toEqual('$test')
+      expect(expand('$($$four:$$test)')).toEqual('$test')
     })
 
     it('should exit on newline', () => {
-      expect(expand('$(four:\\$test)\n')).toEqual('$test')
+      expect(expand('$(four:$$test)\n')).toEqual('$test')
+    })
+
+    it('should keep ${} when $${}', () => {
+      expect(expand('$${four}')).toEqual('${four}')
     })
   })
 

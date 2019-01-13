@@ -21,9 +21,9 @@ describe('CommandFactory', () => {
   }
 
   describe('createFrom', () => {
-    it('should do nothing when no $, or when $ sign is escaped by \\', () => {
+    it('should do nothing when no $, or when $ sign is escaped by $', () => {
       expect(create('test a b c').value).toEqual('test a b c')
-      expect(create('\\$test').value).toEqual('$test')
+      expect(create('$$test').value).toEqual('$test')
     })
 
     it('should replace a single variable', () => {
@@ -64,10 +64,10 @@ describe('CommandFactory', () => {
       expect(create('$(four: $(three:$(two)))').value).toEqual(' num2')
     })
 
-    it('should support escape character "\\" for default value', () => {
-      expect(create('$(four:\\$test)').value).toEqual('$test')
-      expect(create('$(\\$four:\\$test)').value).toEqual('$test')
-      expect(create('$(\\$four:\\$test)').value).toEqual('$test')
+    it('should support escape character "$" for default value', () => {
+      expect(create('$(four:$$test)').value).toEqual('$test')
+      expect(create('$($$four:$$test)').value).toEqual('$test')
+      expect(create('$($$four:$$test)').value).toEqual('$test')
     })
   })
 

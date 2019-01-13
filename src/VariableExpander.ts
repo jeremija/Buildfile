@@ -23,8 +23,8 @@ const STOP_CHARS = new Set([null, '\n'])
 export class VariableExpander {
   constructor(
     protected readonly environment: Environment,
-    protected readonly bracketOpen = '(',
-    protected readonly bracketClose = ')',
+    readonly bracketOpen = '(',
+    readonly bracketClose = ')',
   ) {}
 
   expand(it: ICharacterIterator) {
@@ -38,10 +38,9 @@ export class VariableExpander {
     while (!STOP_CHARS.has(ctx.char = ctx.it.next())) {
       const c = ctx.char!
       switch (c) {
-        case '\\':
-          break
         case '$':
-          if (ctx.lastChar === '\\') {
+          if (ctx.it.peek() === '$') {
+            ctx.it.next()
             ctx.value += c
             break
           }
@@ -124,10 +123,10 @@ export class VariableExpander {
           assert.ok(variable.name)
           variable.colon = true
           break
-        case '\\':
-          break
         case '$':
-          if (ctx.lastChar === '\\') {
+          if (ctx.it.peek() === '$') {
+            // handle $$variable
+            ctx.it.next()
             if (variable.colon) {
               variable.defaultValue += ctx.char
             } else {
