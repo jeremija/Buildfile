@@ -1,16 +1,18 @@
 import {CommandFactory} from './CommandFactory'
-import {Entry} from './Entry'
 import {EntryType} from './EntryType'
+import {Entry} from './Entry'
 import {Environment} from './Environment'
+import {VariableExpander} from './VariableExpander'
 
 describe('CommandFactory', () => {
 
   let cf!: CommandFactory
   beforeEach(() => {
-    cf = new CommandFactory(new Environment({
+    const expander = new VariableExpander(new Environment({
       one: 'numero uno',
       two: 'num2',
     }))
+    cf = new CommandFactory(expander)
   })
 
   function create(value: string) {

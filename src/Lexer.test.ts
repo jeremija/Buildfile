@@ -14,6 +14,8 @@ describe('Lexer', () => {
     it('constructs entries', () => {
       // tslint:disable
       const source = `
+var1 := num1
+var2 ?= num2
 
 # comment1
 env:
@@ -39,6 +41,12 @@ test:
       // tslint:enable
       const lexer = read(source)
       expect(lexer.entries).toEqual([
+        {type: EntryType.VARIABLE_NAME, value: 'var1'},
+        {type: EntryType.VARIABLE_EQUALS, value: ' := '},
+        {type: EntryType.VARIABLE_VALUE, value: 'num1'},
+        {type: EntryType.VARIABLE_NAME, value: 'var2'},
+        {type: EntryType.VARIABLE_IFNOT, value: ' ?= '},
+        {type: EntryType.VARIABLE_VALUE, value: 'num2'},
         {type: EntryType.COMMENT, value: '# comment1'},
         {type: EntryType.TARGET, value: 'env'},
         {type: EntryType.COMMAND, value: 'a=3'},
@@ -144,6 +152,22 @@ d:
     it('fails when no target name', () => {
       expect(() => read(`:\n`))
       .toThrowError(/without a name/)
+    })
+
+    it('fails when no expected equals sign', () => {
+      expect(() => read(`var :t`))
+      .toThrowError(/expected equals/i)
+
+      expect(() => read(`var ?t`))
+      .toThrowError(/expected equals/i)
+    })
+
+    it('fails when no expected space after equals sign', () => {
+      expect(() => read(`var :=t`))
+      .toThrowError(/expected space/i)
+
+      expect(() => read(`var ?=t`))
+      .toThrowError(/expected space/i)
     })
   })
 })

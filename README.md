@@ -136,9 +136,14 @@ test
 The following also works:
 
 ```
+var3 ?= value3
+var4 := value4
+
 test:
-  echo $var
-  echo ${var1}
+  echo $myvar1
+  echo $myvar2
+  echo $var1
+  echo ${var4}
   echo ${var1:defaultValue}
   echo ${var1}
   echo ${var1:${fallback}}
@@ -157,6 +162,7 @@ test:
  - [x] Add support for comments beginning with `#`
  - [x] Add ability to replace environment variables
  - [x] Add ability to specify subprocess environment variables at the end
+ - [x] Add ability to define env variables from within a `Buildfile`
 
 Have an idea? Let me know!
 

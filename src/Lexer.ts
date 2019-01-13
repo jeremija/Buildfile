@@ -53,9 +53,52 @@ export class Lexer {
     this.entries.push(new Entry(entryType, this.value))
   }
 
+  protected processVariableEquals(c: string) {
+    if (c !== '=') {
+      this.fail('Expected equals ("=") sign after variable definition')
+    }
+    if (this.it.next() !== ' ') {
+      this.fail('Expected space (" ") after equal sign')
+    }
+    this.value += '= '
+    this.addEntry(this.entryType)
+    this.entryType = EntryType.VARIABLE_VALUE
+    this.value = ''
+  }
+
+  protected processVariableValue(c: string) {
+    switch (c) {
+      case '\n':
+      case '\r':
+        this.addEntry(EntryType.VARIABLE_VALUE)
+        this.entryType = EntryType.TARGET
+        this.value = ''
+        this.indent = 0
+        return
+      default:
+        this.value += c
+    }
+  }
+
   protected processTargetName(c: string) {
     switch (c) {
       case ' ':
+        if (this.value) {
+          const peek = this.it.peek()
+          if (peek === ':') {
+            this.addEntry(EntryType.VARIABLE_NAME)
+            this.entryType = EntryType.VARIABLE_EQUALS
+            this.value = ' :'
+            this.it.next()
+            return
+          } else if (peek === '?') {
+            this.addEntry(EntryType.VARIABLE_NAME)
+            this.entryType = EntryType.VARIABLE_IFNOT
+            this.value = ' ?'
+            this.it.next()
+            return
+          }
+        }
         if (this.value !== '') {
           this.fail('Target names cannot contain spaces')
         }
@@ -185,6 +228,13 @@ export class Lexer {
         break
       case EntryType.COMMAND:
         this.processCommand(c)
+        break
+      case EntryType.VARIABLE_EQUALS:
+      case EntryType.VARIABLE_IFNOT:
+        this.processVariableEquals(c)
+        break
+      case EntryType.VARIABLE_VALUE:
+        this.processVariableValue(c)
         break
     }
 

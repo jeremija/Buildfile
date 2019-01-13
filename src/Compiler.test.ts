@@ -1,11 +1,17 @@
 import {Compiler} from './Compiler'
+import {Environment} from './Environment'
 import {StringIterator} from './StringIterator'
 
 describe('Compiler', () => {
 
+  let environment!: Environment
+  beforeEach(() => {
+    environment = new Environment({})
+  })
+
   let stream = ''
   function compile() {
-    return new Compiler().compile(new StringIterator(stream))
+    return new Compiler(environment).compile(new StringIterator(stream))
   }
 
   it('builds a program out of character stream', () => {
@@ -28,6 +34,27 @@ target2:
       {value: 'echo t2'},
       {value: 'ls -l'},
     ])
+  })
+
+  it('it sets variables', () => {
+    stream = `a ?= 1
+PATH := test1
+PATH ?= test2`
+    compile()
+    expect(environment.get('a')).toEqual('1')
+    expect(environment.get('PATH')).toEqual('test1')
+  })
+
+  it('sets variable on a single line', () => {
+    stream = `a := 1`
+    compile()
+    expect(environment.get('a')).toEqual('1')
+  })
+
+  it('sets blank variable', () => {
+    stream = `a := `
+    compile()
+    expect(environment.get('a')).toEqual('')
   })
 
   it('fails on error', () => {

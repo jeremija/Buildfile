@@ -1,4 +1,3 @@
-export interface ICharacterIterator {
-  next(): string | null
-  peek(): string | null
-}
+import {IIterator} from './IIterator'
+
+export interface ICharacterIterator extends IIterator<string> {}

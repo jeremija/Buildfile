@@ -14,7 +14,7 @@ export class StringIterator implements ICharacterIterator {
 
   peek(): string | null {
     const position = this.position + 1
-    if (position + 1 >= this.str.length) {
+    if (position >= this.str.length) {
       return null
     }
     return this.str.charAt(position)
