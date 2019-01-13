@@ -84,17 +84,10 @@ build test  # runs test target
 build watch # runs the watch target
 ```
 
-If you installed build locally, it can be invoked by running it via either:
-
-```bash
-npx build
-# or
-./node_modules/.bin/build
-```
+If `buildfile` was installed locally, the provided `build` command can be run
+via: `npx build`, or `./node_modules/.bin/build`.
 
 # Basic syntax
-
-If the following is put into a `Buildfile`:
 
 ```Makefile
 target: dependency
@@ -116,6 +109,42 @@ target
 ```
 
 A custom target can be run by specifying it as `build dependency`.
+
+# Advanced Syntax
+
+```Makefile
+# Contents of "buildfile"
+# Comments start with #
+
+# Define an environment variable
+var1 := value1
+
+# Define an environment variable if it is not already defined
+var2 ?= value2
+
+# Define an environment varaible from an existing variable
+var3 := $var2
+
+target: dependency
+  # var1 will not be expanded, by var2 will
+  echo $$var1 $var2
+
+dependency:
+  echo  $var3 ${var4:$var3}
+```
+
+Running `build` echoes the following:
+
+```
+$ build
+==> target
+==> dependency
+> echo value2 value2
+value2 value2
+> echo $var1 value2
+value1 value2
+```
+
 
 # Variables
 
