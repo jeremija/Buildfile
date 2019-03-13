@@ -11,6 +11,12 @@ import {out} from './config'
 export const bootstrap = new Bootstrap()
 
 export const argumentParser = new ArgumentParser([{
+  name: 'C',
+  alias: 'directory',
+  description: 'Change directory',
+  type: 'string',
+  default: '',
+}, {
   name: 'f',
   alias: 'file',
   description: 'Buildfile to use',
@@ -36,6 +42,11 @@ export async function main(args: string[]) {
     out.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
     out.log(argumentParser.help())
     out.log('  -p, --parallel        Run targets in parallel\n')
+  }
+
+  if (parsed.flags.directory) {
+    out.log('chdir: ' + parsed.flags.directory)
+    process.chdir(parsed.flags.directory as string)
   }
 
   DebugLogger.enableAll(!!parsed.flags.debug)

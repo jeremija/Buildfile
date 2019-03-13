@@ -1,5 +1,5 @@
 import {main} from './cli'
-import {join} from 'path'
+import {dirname, join} from 'path'
 
 describe('main', () => {
 
@@ -20,6 +20,18 @@ describe('main', () => {
   describe('execute in parallel', () => {
     it('executes in parallel', async () => {
       await main(['-f', testBuildFile, '--parallel', '--', 'a', 'b'])
+    })
+  })
+
+  describe('chdir', () => {
+
+    const cwd = process.cwd()
+    afterEach(() => {
+      process.chdir(cwd)
+    })
+
+    it('changes working directory', async () => {
+      await main(['-C', dirname(testBuildFile), '-f', 'Buildfile.test'])
     })
   })
 
