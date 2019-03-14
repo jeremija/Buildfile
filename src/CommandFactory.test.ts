@@ -70,6 +70,12 @@ describe('CommandFactory', () => {
       expect(create('${$$four:$$test}').value).toEqual('$test')
       expect(create('${$$four:$$test}').value).toEqual('$test')
     })
+
+    it('should work with new lines', () => {
+      expect(create('test \na b c').value).toEqual('test \na b c')
+      expect(create('test \n$one b \nc').value)
+      .toEqual('test \nnumero uno b \nc')
+    })
   })
 
 })

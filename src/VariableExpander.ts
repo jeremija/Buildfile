@@ -27,7 +27,7 @@ export class VariableExpander {
     readonly bracketClose = '}',
   ) {}
 
-  expand(it: ICharacterIterator) {
+  expand(it: ICharacterIterator, stopChars = STOP_CHARS) {
     const ctx: IContext = {
       it,
       value: '',
@@ -35,7 +35,7 @@ export class VariableExpander {
       lastChar: '',
     }
 
-    while (!STOP_CHARS.has(ctx.char = ctx.it.next())) {
+    while (!stopChars.has(ctx.char = ctx.it.next())) {
       const c = ctx.char!
       switch (c) {
         case '$':
