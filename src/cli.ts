@@ -34,10 +34,22 @@ export const argumentParser = new ArgumentParser([{
   description: 'Enable debug logging',
   type: 'flag',
   default: false,
+}, {
+  name: 'v',
+  alias: 'version',
+  description: 'Print version and exit',
+  type: 'flag',
+  default: false,
 }])
 
 export async function main(args: string[]) {
   const parsed = argumentParser.parse(args)
+  if (parsed.flags.version) {
+    const pkg = require('../package.json')
+    out.log('%s %s', pkg.name, pkg.version)
+    return
+  }
+
   if (parsed.flags.help) {
     out.log('Usage: build [-p] <target1> [<target2> <target3> ...]')
     out.log(argumentParser.help())

@@ -35,4 +35,10 @@ describe('main', () => {
     })
   })
 
+  describe('--version', () => {
+    it('prints version and exits', async () => {
+      await main(['-v'])
+    })
+  })
+
 })
