@@ -1,6 +1,9 @@
-import {platform} from 'os'
+import {DebugLogger} from './DebugLogger'
 import {dirname, join, normalize} from 'path'
+import {platform} from 'os'
 import {statSync} from 'fs'
+
+const logger = new DebugLogger('path')
 
 export function getPathSeparator(platformValue: string) {
   return platformValue === 'win32' ? ';' : ':'
@@ -28,7 +31,9 @@ export function findNodeModulesBin(dir = process.cwd()): string {
       const candidate = join(dir, 'node_modules', '.bin')
       const result = statSync(candidate)
       if (result.isDirectory()) {
-        return normalize(candidate)
+        const path = normalize(candidate)
+        logger.log('Adding "%s" to PATH', path)
+        paths.push(path)
       }
     } catch (err) {
       // statSync will throw an error if a directory does not exist
