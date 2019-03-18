@@ -31,7 +31,7 @@ describe('findNodeModulesBin', () => {
     expect(value).toEqual(getPath('..', 'node_modules', '.bin'))
 
     value = findNodeModulesBin(join('/non-existing/dir/bla/123/test'))
-    expect(value).toEqual(undefined)
+    expect(value).toEqual('')
 
     value = findNodeModulesBin(getPath('..', 'test-files', 'bla'))
     expect(value).toEqual(getPath('..', 'node_modules', '.bin'))

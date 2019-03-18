@@ -20,20 +20,23 @@ export function getPathWithNodeModules() {
   return addPathVariable(process.env.PATH!, findNodeModulesBin())
 }
 
-export function findNodeModulesBin(dir = process.cwd()): string | undefined {
-  try {
-    const candidate = join(dir, 'node_modules', '.bin')
-    const result = statSync(candidate)
-    if (result.isDirectory()) {
-      return normalize(candidate)
+export function findNodeModulesBin(dir = process.cwd()): string {
+  let lastDir = ''
+  const paths: string[] = []
+  while (dir !== lastDir) {
+    try {
+      const candidate = join(dir, 'node_modules', '.bin')
+      const result = statSync(candidate)
+      if (result.isDirectory()) {
+        return normalize(candidate)
+      }
+    } catch (err) {
+      // statSync will throw an error if a directory does not exist
     }
-  } catch (err) {
-    // statSync will throw an error if a directory does not exist
+
+    lastDir = dir
+    dir = dirname(lastDir)
   }
 
-  const dir2 = dirname(dir)
-  if (dir2 === dir) {
-    return
-  }
-  return findNodeModulesBin(dir2)
+  return paths.join(getPathSeparator(platform()))
 }
